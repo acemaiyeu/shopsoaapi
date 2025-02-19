@@ -1,0 +1,27 @@
+*{
+    margin: 0;
+    padding: 0;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 30px;
+}
+.container{
+    width: 100%;
+}
+.row>div{
+    border: 1px solid black;
+}
+.fillter{
+    text-align: center;
+}
+.label-fillter{
+    text-align: left;
+    margin-left: 3%;
+    float: left;
+}
+.lable-fillter-title{
+    text-align: center;
+}
+.title-fillter{
+    font-size: 35;
+    font-weight: bold;
+}

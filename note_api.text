@@ -1,0 +1,82 @@
+#Api
+    #lấy tất cả sản phẩm 
+        URL: http://localhost:8888/api/v0/products?name=màn hình&brand=xiaomi
+        URI: /api/v0/products
+        PARAMS: 
+            - name=màn hình
+            - brand=xiaomi
+        Reponse:
+            {
+                "data": [
+                {
+                "id": 4,
+                "code": "XM24IN",
+                "name": "Màn hình máy tính xiaomi 24 inch 100hz",
+                "price": "2.300.000đ",
+                "brand": "Xiaomi",
+                "discount": null
+                },
+                ......
+                ],
+                "meta": {
+                    "pagination": {
+                        "total": 2,
+                        "count": 2,
+                        "per_page": 10,
+                        "current_page": 1,
+                        "total_pages": 1,
+                        "links": {}
+                    }
+                }
+            }
+    #lấy fillter (lọc) sản phẩm 
+        URL: http://localhost:8888/api/v0/fillter/products
+        URI: /api/v0/products
+        PARAMS: 
+            {
+                "type" : "tivi"
+            }
+        Reponse:
+            {
+                "data": [
+                    {
+                        "type": "tivi",
+                        "datas": {
+                        "Brand": [
+                        "xiaomi",
+                        "aqua",
+                        "samsung",
+                        "lg"
+                        ],
+                        "Size": [
+                        "21 inch",
+                        "23.5 inch",
+                        "27 inch",
+                        "32 inch"
+                        ],
+                        "Screen resolution": [
+                        "HD",
+                        "FHD",
+                        "2K",
+                        "4K",
+                        "8K"
+                        ]
+                    },
+                    ...
+                ],
+                "meta": {
+                    "pagination": {
+                        "total": 1,
+                        "count": 1,
+                        "per_page": 10,
+                        "current_page": 1,
+                        "total_pages": 1,
+                        "links": {}
+                    }
+                }
+            }
+
+
+
+
+#web
