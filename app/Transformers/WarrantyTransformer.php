@@ -5,6 +5,7 @@ namespace App\Transformers;
 use League\Fractal\TransformerAbstract;
 use App\Models\Warranty;
 use Akaunting\Money\Money;
+use App\Models\Warhouse;
 
 class WarrantyTransformer extends TransformerAbstract
 {
