@@ -11,6 +11,7 @@ use App\Http\Controllers\Api\PromotionController;
 use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ProductVarianController;
 use App\Http\Controllers\Api\WarehouseController;
+use App\Http\Controllers\Api\WarrantyController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -69,8 +70,10 @@ Route::group([
         Route::post('/upload', [UserController::class, 'uploadImage']);
         Route::get('/image', [UserController::class, 'getImage']);
         
-       
-});
+        //Warranty
+        Route::get('/warranty-detail/{code}', [WarrantyController::class, 'getWarrantyByCode']);
+           
+    });
 
 
 Route::group([
@@ -116,6 +119,10 @@ Route::group([
 
 
     Route::post('/warehouse', [WarehouseController::class, 'saveWarehouse']);
+
+
+    //Warranty
+
     
 });
 // Route::group(['prefix' => 'v0'])->get('/products', [ProductController::class, 'index']);
