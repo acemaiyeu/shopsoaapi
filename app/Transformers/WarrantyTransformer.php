@@ -19,13 +19,13 @@ class WarrantyTransformer extends TransformerAbstract
         
         return [
             'id' => $warranty->id,
-            'code' => $warranty->code,
-            'name' => $warranty->name,
-            'lat' => $warranty->lat,
-            'lon' => $warranty->lon,
+            'customer_id' => $warranty->customer_id,
+            'customer_name' => $warranty->customer_name,
+            'customer_email' => $warranty->customer_email,
+            'customer_phone' => $warranty->customer_phone,
             'address' => $warranty->address,
             'created_at' => $warranty->created_at,
-            'warehouse_name' => $this->getWarehouse($warranty->warehouse_id??0)
+            'warehouse_name' => $this->getWarehouse($warranty->warehouse_id)
         ];
     }
 
