@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\CartDetail;
+use App\Models\WarehouseDetail;
 
 class Warehouse extends Model
 {
@@ -24,9 +24,9 @@ class Warehouse extends Model
         'deleted_at',
         'deleted_by'
     ];
-    // public function details(){
-    //     return $this->hasMany(CartDetail::class)->with("product")->select('cart_id','product_id','qty','price','total','total_text');
-    // }
+    public function details(){
+        return $this->hasMany(WarehouseDetail::class)->select('id','warehouse_id','product_id','qty');
+    }
     // public function user(){
     //     return $this->belongsTo(User::class);
     // }

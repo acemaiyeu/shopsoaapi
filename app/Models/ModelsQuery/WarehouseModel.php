@@ -27,6 +27,22 @@ class WarehouseModel extends Model
         if (!empty($request['address'])){
             $query->where('address','like', "%" .  $request['address']. "%");
         }
+
+        if (!empty($request['product_code'])){
+            $query->whereHas('details', function ($query) use($request){
+                $query->whereHas('product', function($query) use ($request){
+                    $query->where('code', $request['product_code']);
+                });
+            });
+        }
+        if (!empty($request['product_name'])){
+            $query->whereHas('details', function ($query) use($request){
+                $query->whereHas('product', function($query) use ($request){
+                    $query->where('name', 'like',"%" . $request['product_name'] . "%");
+                });
+            });
+        }
+
         // if (!empty($request['code'])){
         //     $query->where('code',$request['code']);
         // }
