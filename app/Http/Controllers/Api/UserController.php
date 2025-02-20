@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\SessionLogin;
 use App\Transformers\userTransformer;
 use App\Models\ModelsQuery\UserModel;
+use Illuminate\Support\Facades\File;
 
 class UserController extends Controller
 {
@@ -92,4 +93,48 @@ class UserController extends Controller
         $session->save();
         return ['status' => 200];
     }
+    public function uploadImage(Request $request)
+    {
+        
+        // Kiểm tra xem có file được gửi lên không
+        if (!$request->hasFile('image')) {
+            return response()->json(['message' => 'Không có file nào được tải lên'], 400);
+        }
+
+        $file = $request->file('image');
+
+        // Định dạng tên file
+        $fileName = $file->getClientOriginalName();
+        if(File::exists(public_path('img/' . $fileName))){
+            return response()->json([
+                'message' => 'Tải lên thất bại. Tên file đã có trên server',
+                'filePath' => url('img/' . $fileName)
+            ],400);
+        }
+
+        // Lưu file vào thư mục public/img
+        $file->move(public_path('img'), $fileName);
+
+        // Trả về đường dẫn file sau khi upload
+        return response()->json([
+            'message' => 'Tải lên thành công',
+            'filePath' => url('img/' . $fileName)
+        ]);
+    }
+    public function getImage(Request $req)
+    {
+        $fileName = $req->input('file_name'); // Lấy tên file từ request
+        $imagePath = public_path('img/' . $fileName); // Đường dẫn file ảnh
+    
+        if (File::exists($imagePath)) {
+            return url('img/' . $fileName); // Trả về URL đầy đủ
+         
+        }
+    
+        return response()->json([
+            'message' => 'Ảnh không tồn tại',
+            'image' => null
+        ], 404);
+    }
+
 }

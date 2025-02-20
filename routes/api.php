@@ -65,7 +65,11 @@ Route::group([
 
         //Warehouse
         Route::get('/get-location', [WarehouseController::class, 'getLocation']);
-
+        
+        Route::post('/upload', [UserController::class, 'uploadImage']);
+        Route::get('/image', [UserController::class, 'getImage']);
+        
+       
 });
 
 
@@ -115,3 +119,4 @@ Route::group([
     
 });
 // Route::group(['prefix' => 'v0'])->get('/products', [ProductController::class, 'index']);
+
