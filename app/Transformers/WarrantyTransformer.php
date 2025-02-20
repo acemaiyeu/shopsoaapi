@@ -5,13 +5,13 @@ namespace App\Transformers;
 use League\Fractal\TransformerAbstract;
 use App\Models\Warranty;
 use Akaunting\Money\Money;
-use App\Models\Warhouse;
+use App\Models\Warehouse;
 
 class WarrantyTransformer extends TransformerAbstract
 {
     
     public function getWarehouse($id){
-        return Warhouse::whereNull("deleted_at")->find($id)->select('id','name');
+        return Warehouse::whereNull("deleted_at")->find($id)->select('id','name');
     }
 
     public function transform(Warranty $warranty)
