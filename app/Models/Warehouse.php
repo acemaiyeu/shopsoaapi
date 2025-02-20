@@ -25,7 +25,7 @@ class Warehouse extends Model
         'deleted_by'
     ];
     public function details(){
-        return $this->hasMany(WarehouseDetail::class)->select('id','warehouse_id','product_id','qty');
+        return $this->hasMany(WarehouseDetail::class)->with('product')->select('id','warehouse_id','product_id','qty');
     }
     // public function user(){
     //     return $this->belongsTo(User::class);
