@@ -122,6 +122,9 @@ class WarehouseModel extends Model
         if (!empty($request['address'])){
             $query->where('address','like', "%" .  $request['address']. "%");
         }
+        if (!empty($request['status'])){
+            $query->where('status',$request['status']);
+        }
         if (!empty($request['warehouse_id'])){
             $query->whereHas('warehousedetail', function($query) use($request){
                     $query->whereHas('warehouse', function($query) use($request){
