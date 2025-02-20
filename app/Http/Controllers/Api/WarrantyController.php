@@ -19,6 +19,7 @@ class WarrantyController extends Controller
     }
     
     public function getWarrantyByCode(Request $req){
+            $req['limit'] = 1;
            $warranty =  $this->warrantyModel->getWarrantyByCode($req);
            return fractal($warranty, new WarrantyTransformer())->respond();
     }
