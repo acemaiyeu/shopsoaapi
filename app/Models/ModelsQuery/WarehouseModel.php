@@ -152,6 +152,7 @@ class WarehouseModel extends Model
                     $query->where('code',$request['product'])->orwhere('name', $request['product']);
                 });
             });
+        }
             if (!empty($request['createdby'])){
                 $query->where('created_by', $request['createdby']);
             }
