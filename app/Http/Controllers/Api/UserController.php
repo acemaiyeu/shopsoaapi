@@ -79,6 +79,9 @@ class UserController extends Controller
             $session = SessionLogin::where('device', $req['device'])->whereNull('deleted_at')->first();
             $status_code = 200;
         }
+        if ($session == null || empty($session)){
+            $status_code = 400;
+        }
         return ["data"=> ["session_id" => $session, "status_code" => $status_code]];
     }
     public function addSession(Request $request){
