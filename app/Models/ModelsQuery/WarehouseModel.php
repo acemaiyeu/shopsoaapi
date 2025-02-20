@@ -139,6 +139,22 @@ class WarehouseModel extends Model
                 $query->where('code','like',"%" . $req['product_name'] . "%");
             });
         }
+        if (!empty($request['warehouse'])){
+                $query->whereHas('warehousedetail', function($query) use($request){
+                    $query->whereHas('warehouse',  function($query) use($request){
+                        $query->where('code',$request['warehouse'])->orwhere('name', $request['warehouse']);
+                    });
+                });
+        }
+        if (!empty($request['product'])){
+            $query->whereHas('warehousedetail', function($query) use($request){
+                $query->whereHas('product',  function($query) use($request){
+                    $query->where('code',$request['product'])->orwhere('name', $request['product']);
+                });
+            });
+            if (!empty($request['createdby'])){
+                $query->where('created_by', $request['createdby']);
+            }
         $query->with('warehousedetail');
         $query->with('user');
         $limit = $request['limit'] ?? 10;
