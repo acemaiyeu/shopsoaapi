@@ -69,9 +69,9 @@ class UserController extends Controller
         $user_id = auth()->user();
         $session = "";
         $status_code = 204;
-        if ($user_id != null){
+        if (!empty($user_id) != null){
             $session = SessionLogin::where('user_id', $user_id)->whereNull('deleted_at')->first();
-            if ($session){
+            if (!empty($session)){
                 $status_code = 200;
             }
         }
