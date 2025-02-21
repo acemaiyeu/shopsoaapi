@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\SessionLogin;
+use Illuminate\Support\Facades\Hash;
+use App\Models\User;    
 
 class AuthController extends Controller
 {
@@ -43,6 +45,38 @@ class AuthController extends Controller
     public function profile()
     {
         return response()->json(auth()->user());
+    }
+
+    public function update(Request $req)
+    {
+        $user = auth()->user();
+        if (!empty($user)){
+            if (!empty($req['username'])){
+                $user->username = $req['username'];
+            }
+            if (!empty($req['email'])){
+                if (!empty(User::whereNull('deleted_at')->where('email', $req['email'])->first()) && $req['email'] != $user->email){
+                    return response(["data" => ["message" => "Email đã tồn tại!"]],400);
+                }else{
+                   
+                    $user->email = $req['email'];
+                }   
+            }
+            if (!empty($req['password'])){
+                $user->password = Hash::make($req['password']);
+            }
+            if (!empty($req['address'])){
+                $user->address = $req['address'];
+            } 
+            if (!empty($req['phone'])){
+                $user->phone = $req['phone'];
+            }
+            if (!empty($req['avatar'])){
+                $user->avatar = $req['avatar'];
+            }
+            $user->save();
+        }
+        return response()->json($user);
     }
 
     /**
