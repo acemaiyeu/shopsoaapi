@@ -28,4 +28,8 @@ class WarehouseProductDetailStatus extends Model
     public function user(){
         return $this->hasOne(User::class, "id","created_by")->select('username');
     }
+    public function create(){
+        return $this->hasOne(User::class, "id","created_by")->select('username');
+    }
+    
 }

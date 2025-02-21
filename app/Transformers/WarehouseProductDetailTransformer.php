@@ -18,7 +18,7 @@ class WarehouseProductDetailTransformer extends TransformerAbstract
             'warehouse_detail'      => $warehouse->warehousedetail,
             'status'        => $warehouse->status=="IMPORT"?"Nhập":"Xuất",
             "qty"           => $warehouse->qty,
-            'created_by'    => $warehouse->user?$warehouse->user->username:"Không tìm thấy",
+            'created_by'    => $warehouse->created_by?$warehouse->create->username:"Không tìm thấy",
             'created_at'    => Carbon::parse($warehouse->created_at)->format('d-m-Y')
         ];
     }

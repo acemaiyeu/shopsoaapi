@@ -145,19 +145,21 @@ class WarehouseModel extends Model
         if (!empty($request['warehouse'])){
                 $query->whereHas('warehousedetail', function($query) use($request){
                     $query->whereHas('warehouse',  function($query) use($request){
-                        $query->where('code',$request['warehouse'])->orwhere('name', $request['warehouse']);
+                        $query->where('code',$request['warehouse'])->orwhere('name' , 'like',  "%" . $request['warehouse']. "%");
                     });
                 });
         }
         if (!empty($request['product'])){
             $query->whereHas('warehousedetail', function($query) use($request){
                 $query->whereHas('product',  function($query) use($request){
-                    $query->where('code',$request['product'])->orwhere('name', $request['product']);
+                    $query->where('code',$request['product'])->orwhere('name', 'like', "%" . $request['product'] . "%");
                 });
             });
         }
             if (!empty($request['createdby'])){
-                $query->where('created_by', $request['createdby']);
+                $query->whereHas('create', function($query) use($request){
+                    $query->where('username', 'like', "%" . $request['createdby'] . "%");
+                });
             }
         $query->with('warehousedetail');
         $query->with('user');
@@ -197,7 +199,7 @@ class WarehouseModel extends Model
                             $warehouse_product_detail->warehouse_detail_id = $warehouse_detail->id;
                             $warehouse_product_detail->status = $req['status'];
                             $warehouse_product_detail->qty = $req['qty'];
-                            $warehouse_product_detail->created_by =  auth()->user()->id;
+                            $warehouse_product_detail->created_by = auth()->user()->id;
                             $warehouse_product_detail->save();
                     }else{
                             return response(["data" => ["message" => "Không tìm thấy sản phẩm " . $req['product']]],400);
