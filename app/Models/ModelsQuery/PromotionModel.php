@@ -56,6 +56,14 @@ class PromotionModel extends Model
             "name_show" => "Tổng tiền hàng"
         ];
 
+        if ($cart->fee_ship > 0){
+            $info_payment[] = [
+                "total_price" => $cart->fee_ship,
+                "total_price_text" => number_format($cart->fee_ship,0,',','.') . " đ",
+                "name_show" => "Phí vận chuyển"
+            ];
+        }
+
         $promotions = Promotion::whereNull('deleted_at')->where('start_time','<=',Carbon::now())->where('end_time','>=',Carbon::now())->where('status',1)->get();
         if (!empty($promotions)){
                 foreach($promotions as $promotion){
@@ -245,7 +253,7 @@ class PromotionModel extends Model
 
         
         $total_price_payment = $cart->details->sum('total') - $cart->discount_price;
-        
+        $total_price_payment += $cart->fee_ship;
         $info_payment[count($info_payment)] = [
             "total_price" => $total_price_payment,
             "total_price_text" => number_format($total_price_payment,0,',','.') . " đ",

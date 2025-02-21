@@ -30,6 +30,7 @@ class CartTransformer extends TransformerAbstract
             'total_price' => $cart->total_price,
             'info_payment' => json_decode($cart->info_payment),
             'gifts' => json_decode($cart->gifts),
+            'warehouses' =>  json_decode($cart->warehouses), 
             // 'gifts' => [],
             'total_pay' => $cart->total_pay,
             'created_at'  => $cart->created_at,

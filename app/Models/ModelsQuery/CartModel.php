@@ -10,6 +10,7 @@ use App\Models\ProductFillter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use App\Models\Warehouse;
 use Illuminate\Support\Facades\Http;
 
 class CartModel extends Model
@@ -33,7 +34,7 @@ class CartModel extends Model
         if (!empty($request['detailsSort'])){
             $query->with('detailsHaveProductSort');
         }
-           
+          
             $query->with('user');
             return $query->first();
     }
@@ -53,7 +54,16 @@ class CartModel extends Model
                     }
                 }
             }
-
+            if (!empty($cart->warehouse_id)){
+                $check_product = Warehouse::whereNull('deleted_at')->whereHas('details', function($query) use($request){
+                    $query->where('product_id', $request['product_id'])->whereHas('product', function($query) use($request){
+                        $query->where('qty','>=', $request['qty']);
+                    });
+                })->where('id',$cart->warehouse_id)->first();
+                if (!$check_product){
+                    return ["data" => ["message" => "Sản phẩm đã hết trong kho bạn vui lòng chọn sản phẩm khác"]];
+                }
+            }
             // $cart->user_id = !empty($cart->user_id)?$cart->user_id:(auth()->user->id??null);
             $cart->payment = $cart->payment??null;
             $cart->discount_code = $cart->discount_code??null;
@@ -115,8 +125,8 @@ class CartModel extends Model
             return $cart;
         }catch(\Exception $e) {
             DB::rollBack();
-            dd($e);
-            return $e;
+          
+            return ["data" => ["message" => $e]];
         }
     }
     public function updateCartInfo($req,$cart){
@@ -137,6 +147,29 @@ class CartModel extends Model
             $cart->total_pay = $req['total_pay']??$cart->total_pay;
             $cart->updated_at = Carbon::now();
             $cart->updated_by = auth()->user()->id??"customer updated";
+
+            if (!empty($cart->address)){
+                $address_array = explode(",",$cart->address);
+                
+                $data_location = $this->getLocationForCart(trim($address_array[count($address_array) - 2]), trim($address_array[count($address_array) - 1]));
+                if ($data_location){
+                    $cart->lat = $data_location['data']['lat'];
+                    $cart->lon = $data_location['data']['lon'];
+                }
+            }
+            $cart->warehouse_id = $req['warehouse_id']??$cart->warehouse_id;
+
+                $warehouses = json_decode($cart->warehouses);
+                if (!empty($req['warehouse_id']) && !empty($warehouses)){
+                    foreach($warehouses as $w){
+                        if ($w->id == $cart->warehouse_id){
+                            $cart->fee_ship = $w->price;
+                            break;
+                        }
+                    }
+                }
+           
+
             $cart->save();
 
             DB::commit();
@@ -171,6 +204,39 @@ class CartModel extends Model
                 return ["data" => ["message" => "not found"], "status" => 400];
             }
     }
+    public function getWarehousesNear($lat, $lon, $product_ids){
+        $product_id_lists = "";
+        $total_qty = 10;
+        foreach($product_ids as $i){
+                $product_id_lists = $product_id_lists .  $i . ","; 
+        }
+        $product_id_lists = substr($product_id_lists, 0, -1);
+
+
+        $nearestWarehouse = DB::select("
+                 SELECT  w.id, w.code, w.name,  w.lat, w.lon,
+                    ROUND(
+						  (6371 * ACOS(
+                        COS(RADIANS(?)) * COS(RADIANS(w.lat)) * 
+                        COS(RADIANS(w.lon) - RADIANS(?)) + 
+                        SIN(RADIANS(?)) * SIN(RADIANS(w.lat))
+                    )), 2) AS distance
+                    
+                FROM warehouses w
+                 WHERE    (SELECT id FROM warehouse_details wd WHERE wd.warehouse_id = w.id AND wd.product_id IN (?) AND wd.qty >= ?) > ?
+
+                
+            ", [$lat, $lon, $lat, $product_id_lists, $total_qty, count($product_ids)]);
+
+            if (!empty($nearestWarehouse)) {
+                // echo "Kho hàng gần nhất: " . $nearestWarehouse[0]->name;
+                // echo " - Khoảng cách: " . round($nearestWarehouse[0]->distance, 2) . " km";
+                // dd($nearestWarehouse);
+                return ["data" => ["message" => "success","warehouses" => $nearestWarehouse,  "far" => round($nearestWarehouse[0]->distance, 2), "unit" => "km"],"status" => 200];
+            } else {
+                return ["data" => ["message" => "not found"], "status" => 400];
+            }
+    }
     public function getLocationForCart($district, $city)
     {
         //
@@ -192,5 +258,19 @@ class CartModel extends Model
         ]);
         $data = $response->json(); // Chuyển kết quả về JSON
         return ["data" => ["lat" => $data[0]['lat'], "lon" => $data[0]['lon']]];
+    }
+
+    public function priceForDistant($distant, $total_weight){
+        $price = 16000;
+            if ($total_weight > 3){
+                $total_weight -= 3;
+
+                $total_weight = round($total_weight / 3,0.9);
+                for ($i = 1; $i <= $total_weight; $i ++){
+                    $price += 2500;
+                }
+              
+            }
+            return $price;
     }
 }

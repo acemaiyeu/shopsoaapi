@@ -22,8 +22,8 @@ class WarehouseController extends Controller
     public function getLocation(Request $req)
     {
         //
-        $district = $req['district'];
-        $city = $req['city'];
+        $district = trim($req['district']);
+        $city = trim($req['city']);
         // $url = "https://nominatim.openstreetmap.org/search?city=" . urlencode($city);
         // //  . "&county=" . urlencode($district) . "&format=json&addressdetails=1";
         // if (!empty($req['district'])){
