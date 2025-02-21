@@ -23,5 +23,11 @@ class WarrantyController extends Controller
            $warranty =  $this->warrantyModel->getWarrantyByCode($req);
            return fractal($warranty, new WarrantyTransformer())->respond();
     }
-    
+    public function getWarrantyByWarhouseAndOrder(Request $req, $warehouse_id, $order_id){
+        $req['warehouse_id'] = $warehouse_id;
+        $req['order_id'] = $order_id;
+        $req['limit']  = 1;
+        $warranty =  $this->warrantyModel->getWarrantyByCode($req);
+        return fractal($warranty, new WarrantyTransformer())->respond();
+    }
 }

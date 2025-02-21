@@ -6,12 +6,13 @@ use League\Fractal\TransformerAbstract;
 use App\Models\Warranty;
 use Akaunting\Money\Money;
 use App\Models\Warehouse;
+use Carbon\Carbon;
 
 class WarrantyTransformer extends TransformerAbstract
 {
     
     public function getWarehouse($id){
-        return Warehouse::whereNull("deleted_at")->find($id)->select('id','name');
+        return Warehouse::whereNull("deleted_at")->select('id','name','address')->find($id);
     }
 
     public function transform(Warranty $warranty)
@@ -23,9 +24,11 @@ class WarrantyTransformer extends TransformerAbstract
             'customer_name' => $warranty->customer_name,
             'customer_email' => $warranty->customer_email,
             'customer_phone' => $warranty->customer_phone,
-            'address' => $warranty->address,
-            'created_at' => $warranty->created_at,
-            'warehouse_name' => $this->getWarehouse($warranty->warehouse_id)
+            'customer_address' => $warranty->customer_address,
+            'created_at' => Carbon::parse($warranty->created_at)->format('d-m-Y'),
+            'warehouse' => $this->getWarehouse($warranty->warehouse_id),
+            'createdby' => $warranty->createdby,
+            'details' => $warranty->details
         ];
     }
 

@@ -124,8 +124,10 @@ Route::group([
     Route::post('/warehouse', [WarehouseController::class, 'saveWarehouse']);
 
 
-    //Warranty
 
+
+    //Warranty
+    Route::get('/warranty/{warhouse_id}/{order_id}', [WarrantyController::class, 'getWarrantyByWarhouseAndOrder']);
     
 });
 // Route::group(['prefix' => 'v0'])->get('/products', [ProductController::class, 'index']);

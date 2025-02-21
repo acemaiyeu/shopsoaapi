@@ -18,9 +18,12 @@ class WarrantyModel extends Model
         $query =  Warranty::query();
         $query->whereNull('deleted_at')->whereNull('deleted_by');
         
-        // if (!empty($request['code'])){
-        //     $query->where('code',$request['code']);
-        // }
+        if (!empty($request['warehouse_id'])){
+            $query->where('warehouse_id',$request['warehouse_id']);
+        }
+        if (!empty($request['order_id'])){
+            $query->where('order_id',$request['order_id']);
+        }
         // if (!empty($request['name'])){
         //     $query->where('name', 'like', "%" . $request['name'] . "%");
         // }
@@ -46,7 +49,9 @@ class WarrantyModel extends Model
         // if (!empty($request['code'])){
         //     $query->where('code',$request['code']);
         // }
+        $query->with('details');
 
+        
         $limit = $request['limit'] ?? 10;
         
         if($limit == 1){

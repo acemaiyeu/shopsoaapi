@@ -4,7 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\WarehouseDetail;
+use App\Models\WarrantyDetail;
+use App\Models\User;
 
 class Warranty extends Model
 {
@@ -26,7 +27,10 @@ class Warranty extends Model
         'deleted_by'
     ];
     public function details(){
-        return $this->hasMany(WarrantyDetail::class)->with('product')->select('id','warehouse_id','product_id','qty');
+        return $this->hasMany(WarrantyDetail::class)->with('product')->with('orderDetail')->with('createdby')->select('id','warranty_id','product_id','serial','time_warranties','order_detail_id','created_at','created_by');
+    }
+    public function createdby(){
+        return $this->hasOne(User::class,'id',"created_by")->select('id','username','phone','address');
     }
     // public function user(){
     //     return $this->belongsTo(User::class);

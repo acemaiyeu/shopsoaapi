@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Warranty;
 use App\Models\Product;
+use App\Models\OrderDetail;
+use App\Models\User;
 
 class WarrantyDetail extends Model
 {
@@ -15,6 +17,7 @@ class WarrantyDetail extends Model
         'id',
         'warranty_id',
         'product_id',
+        'order_detail_id',
         'serial',
         'time_warranties',
         'created_at',
@@ -30,4 +33,12 @@ class WarrantyDetail extends Model
     public function product(){
         return $this->belongsTo(Product::class)->select('id','code','name');
     }
+    public function orderDetail(){
+        return $this->belongsTo(OrderDetail::class)->select('id','product_id','price','price_text');
+    }
+    public function createdby(){
+        return $this->hasOne(User::class,'id',"created_by")->select('id','username','phone','address');
+    }
+
+    
 }
