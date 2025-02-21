@@ -8,6 +8,10 @@ use App\Models\SessionLogin;
 use App\Transformers\userTransformer;
 use App\Models\ModelsQuery\UserModel;
 use Illuminate\Support\Facades\File;
+use App\Models\User;
+// use App\Http\Requests\RegisterValidator;
+use App\Http\Requests\RegisterValidator;
+use Illuminate\Support\Facades\Hash;
 
 class UserController extends Controller
 {
@@ -135,6 +139,22 @@ class UserController extends Controller
             'message' => 'Ảnh không tồn tại',
             'image' => null
         ], 404);
+    }
+    public function register(RegisterValidator $request)
+    {
+
+        $user  = User::whereNull('deleted_at')->where('email', $request['email'])->first();
+        if (!empty($user)){
+            return response()->json(['message' => "Tài khoản đã tồn tại!"], 400);
+        }
+        $user = New User();
+        $user->email = $request['email'];
+        $user->password = Hash::make($request['password']);
+        $user->role_code = "GUEST";
+        $user->address = !empty($request['address'])?$request['address']:"";
+        $user->username = !empty($request['username'])?$request['username']:"";
+        $user->save();
+        return response()->json(['username' => $user->email]);
     }
 
 }

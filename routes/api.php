@@ -32,13 +32,14 @@ Route::group([
     'prefix' => 'auth'
 
 ], function ($router) {
-
+    
     Route::post('login', [AuthController::class, 'login']);
     Route::post('logout', 'AuthController@logout');
     Route::post('refresh', 'AuthController@refresh');
     Route::get('profile', [AuthController::class, 'profile']);
 
 });
+
 Route::group([
     'prefix' => 'v0'
 ], function($router){
@@ -72,6 +73,8 @@ Route::group([
         
         //Warranty
         Route::get('/warranty-detail/{code}', [WarrantyController::class, 'getWarrantyByCode']);
+
+        Route::post('/register', [UserController::class, 'register']);
            
     });
 
