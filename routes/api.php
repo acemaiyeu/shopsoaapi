@@ -95,7 +95,7 @@ Route::group([
     Route::get('/orders', [OrderController::class, 'getAllOrders']);
 
     //product
-    Route::get('/products', [ProductController::class, 'index']);
+    Route::get('/products', [ProductController::class, 'indexByAdmin']);
     Route::get('/product-detail/{id}', [ProductController::class, 'detailAdmin']);
     Route::post('/product', [ProductController::class, 'create']);
 
