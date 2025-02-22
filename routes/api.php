@@ -88,6 +88,7 @@ Route::group([
     Route::get('/promotion-products', [PromotionController::class, 'getProductPromotions']);
     Route::get('/promotion/{id}', [PromotionController::class, 'getDetail']);
     Route::post('/promotion', [PromotionController::class, 'create']);
+    Route::delete('/promotion/deleted/{id}', [PromotionController::class, 'deleteById']);
 
     Route::get('/statistics-orders', [OrderController::class, 'statisticsOrders']);
     Route::get('/orders', [OrderController::class, 'getAllOrders']);

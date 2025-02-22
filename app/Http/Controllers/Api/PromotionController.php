@@ -10,6 +10,7 @@ use App\Transformers\ProductTransformer;
 use App\Models\ModelsQuery\PromotionModel;
 use App\Models\ModelsQuery\ProductModel;
 use Carbon\Carbon;
+use App\Models\Promotion;
 use App\Models\Product;
 class PromotionController extends Controller
 {
@@ -40,6 +41,15 @@ class PromotionController extends Controller
     public function create(Request $req){
         $promotion =  $this->promotion_model->createPromotions($req);
         return fractal($promotion, new PromotionTransformer())->respond();
+        // return $promotion;
+    }
+    public function deleteById(Request $req, $id){
+        $promotion =  Promotion::whereNull('deleted_at')->find($id);
+        if (!empty($promotion)){
+            $promotion->deleted_at = Carbon::now();
+            $promotion->save();
+        }
+        return response(["data" => ["message"]],200);
         // return $promotion;
     }
     public function getPromotionsForWeb(Request $req){
