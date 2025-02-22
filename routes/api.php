@@ -76,7 +76,7 @@ Route::group([
         Route::get('/warranty-detail/{code}', [WarrantyController::class, 'getWarrantyByCode']);
 
         Route::post('/register', [UserController::class, 'register']);
-           
+        Route::get('/warranty/{warhouse_id}/{order_id}', [WarrantyController::class, 'getWarrantyByWarhouseAndOrder']);
     });
 
 

@@ -17,6 +17,7 @@ class OrderTransformer extends TransformerAbstract
             'cart_id'          => $order->cart_id,
             'cart'             => $order->cart??null,
             'user_id'          => $order->user_id,
+            'warehouse_id'     => $order->warehouse_id,
             'user'             => $order->user??null,
             'username'         => $order->username,
             'phone_number'     => $order->phone_number,

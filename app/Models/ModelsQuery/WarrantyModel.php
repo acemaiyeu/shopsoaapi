@@ -50,7 +50,7 @@ class WarrantyModel extends Model
         //     $query->where('code',$request['code']);
         // }
         $query->with('details');
-
+        $query->with('order');
         
         $limit = $request['limit'] ?? 10;
         

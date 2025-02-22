@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\WarrantyDetail;
 use App\Models\User;
+use App\Models\Order;
 
 class Warranty extends Model
 {
@@ -14,6 +15,7 @@ class Warranty extends Model
     protected $fillable = [
         'id',
         'warehouse_id',
+        'order_id',
         'customer_id',
         'customer_name',
         'customer_phone',
@@ -31,6 +33,9 @@ class Warranty extends Model
     }
     public function createdby(){
         return $this->hasOne(User::class,'id',"created_by")->select('id','username','phone','address');
+    }
+    public function order(){
+        return $this->hasOne(Order::class,'id',"order_id")->select('id','total_price');
     }
     // public function user(){
     //     return $this->belongsTo(User::class);

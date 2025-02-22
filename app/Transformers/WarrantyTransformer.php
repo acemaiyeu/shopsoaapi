@@ -17,7 +17,10 @@ class WarrantyTransformer extends TransformerAbstract
 
     public function transform(Warranty $warranty)
     {
-        
+        if (!empty($warranty->order)){
+            $warranty->order->total_price_text = number_format($warranty->order->total_price,0,',','.') . " đ";
+        }
+
         return [
             'id' => $warranty->id,
             'customer_id' => $warranty->customer_id,
@@ -28,7 +31,8 @@ class WarrantyTransformer extends TransformerAbstract
             'created_at' => Carbon::parse($warranty->created_at)->format('d-m-Y'),
             'warehouse' => $this->getWarehouse($warranty->warehouse_id),
             'createdby' => $warranty->createdby,
-            'details' => $warranty->details
+            'details' => $warranty->details,
+            'order' => $warranty->order
         ];
     }
 

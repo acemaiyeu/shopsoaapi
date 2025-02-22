@@ -105,6 +105,6 @@ class OrderController extends Controller
             $orders = $this->orderModel->getAllOrders($req);
             return fractal($orders, new OrderTransformer())->respond();
         }
-        return response(["data" => ["message" => "Không tìm thấy đơn hàng của bạn. Chắc chắn bạn đã đăng nhập?"]])  ;
+        return response(["data" => ["message" => "Không tìm thấy đơn hàng của bạn. Chắc chắn bạn đã đăng nhập?"]],400)  ;
     }   
 }
