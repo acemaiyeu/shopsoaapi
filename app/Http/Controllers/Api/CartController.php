@@ -89,11 +89,11 @@ class CartController extends Controller
         $status = 401;
         $cart = null;
             
-        if (!(Warehouse::whereNull('deleted_at')->whereHas('details', function($query) use($req){
-            $query->where('product_id', $req['product_id']);
-        })->exists())){
-            return response(["message" => "Các chi nhánh đã hết hàng. Mong quý khách thông cảm!"],400);
-        }
+            if (!(Warehouse::whereNull('deleted_at')->whereHas('details', function($query) use($req){
+                $query->where('product_id', $req['product_id']);
+            })->exists())){
+                return response(["message" => "Các chi nhánh đã hết hàng. Mong quý khách thông cảm!"],400);
+            }
         
         if (!empty($product)){
            

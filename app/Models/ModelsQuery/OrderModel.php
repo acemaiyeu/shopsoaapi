@@ -70,6 +70,9 @@ class OrderModel extends Model
             if (empty($cart)){
                 return ["message" => "Không tìm thấy giỏ hàng", "status_code" => 400];
             }
+            if (empty($cart->warehouse_id)){
+                return ["message" => "Không tìm thấy đơn vị vận chuyển không thể đặt hàng!", "status_code" => 400];
+            }
             $order = new Order();
                 $date = Carbon::now('Asia/Ho_Chi_Minh');
                 $order->code = "DH_" . $date->format('Y') . $date->format('m') . $date->format('d') . $date->format('H') . $date->format('i') . $date->format('s')  . random_int(100, 999);
@@ -82,6 +85,7 @@ class OrderModel extends Model
                 $order->phone_number = $cart->phone_number??$req['phone'];
                 $order->address = $cart->address??$req['address'];
                 $order->discount_price  = $cart->discount_price;
+                $order->warehouse_id  = $cart->warehouse_id;
                 
                 $order->discount_code  = $cart->discount_code;
                 $order->total_price = $cart->total_pay;
@@ -97,7 +101,7 @@ class OrderModel extends Model
                     $detail_order->order_id = $order->id;
                     $detail_order->product_id = $detail->product_id??null;
                     $detail_order->product_code = $detail->product->code;
-                    $detail_order->product_name = $detail->product->code;
+                    $detail_order->product_name = $detail->product->name;
                     $detail_order->qty = $detail->qty??1;
                     $detail_order->price = $detail->price;
                     $detail_order->price_text = number_format($detail->price,0,',','.') . " đ";
