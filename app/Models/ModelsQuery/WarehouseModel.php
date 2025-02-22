@@ -200,6 +200,7 @@ class WarehouseModel extends Model
                             $warehouse_product_detail->status = $req['status'];
                             $warehouse_product_detail->qty = $req['qty'];
                             $warehouse_product_detail->created_by = auth()->user()->id;
+                            $warehouse_product_detail->created_by = $req['price']??0;
                             $warehouse_product_detail->save();
                     }else{
                             return response(["data" => ["message" => "Không tìm thấy sản phẩm " . $req['product']]],400);
