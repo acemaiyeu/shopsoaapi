@@ -47,4 +47,21 @@ class PromoCodeController extends Controller
         $promo->discount = json_encode($req['discount']);
         $promo->save();
     }
+    public function create(Request $req){
+        $promo = $this->promoCodeModel->create($req);
+        if (is_array($promo)){
+            return response($promo);
+        }
+        
+        return  fractal($promo, new PromoCodeTransformer())->respond(); 
+    }
+    public function deleteById(Request $req, $id){
+        $promo =  PromoCode::whereNull('deleted_at')->find($id);
+        if (!empty($promo)){
+            $promo->deleted_at = Carbon::now();
+            $promo->save();
+        }
+        return response(["data" => ["message"]],200);
+        // return $promotion;
+    }
 }

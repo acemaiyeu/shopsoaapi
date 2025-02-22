@@ -112,6 +112,8 @@ Route::group([
     Route::get('/promocodes', [PromoCodeController::class, 'getPromoCode']);
     Route::get('/promo-detail/{id}', [PromoCodeController::class, 'detail']);
     Route::put('/promo-update', [PromoCodeController::class, 'update']);
+    Route::post('/coupon', [PromoCodeController::class, 'create']);
+    Route::delete('/coupon/{id}', [PromoCodeController::class, 'deleteById']);
 
     //Warehouse
     Route::get('/warehouses', [WarehouseController::class, 'getAllWarehouse']);

@@ -9,6 +9,7 @@ use Carbon\Carbon;
 use App\Models\PromoCode;
 use App\Models\Cart;
 use Illuminate\Support\Arr;
+use Illuminate\Support\Facades\DB;
 
 class PromoCodeModel extends Model
 {
@@ -232,5 +233,33 @@ class PromoCodeModel extends Model
         if ($method == ">="){
             return $value >= $value2;
         }
+    }
+    public function create($req){
+        $promo = new PromoCode();
+        if (!empty($req['id'])){
+            $promo  = PRomoCode::whereNull('deleted_at')->find($req['id']);
+        }
+
+       try{
+            DB::beginTransaction();
+                $promo->condition_data               = !empty($req['condition_data'])?json_encode($req['condition_data']):$promo->condition_data;
+                $promo->discount                    = !empty($req['discount'])?json_encode($req['discount']):$promo->discount;
+                $promo->discounts                     = !empty($req['discounts'])?$req['discounts']:($promo->discounts??0);
+                $promo->status                       = !empty($req['status'])?$req['status']:$promo->status;
+                $promo->type                       = !empty($req['type'])?$req['type']:($promo->type??"product");
+                $promo->code                         = !empty($req['code'])?$req['code']:$promo->code;
+                $promo->name                         = !empty($req['name'])?$req['name']:$promo->name;
+                $promo->start_date                   = !empty($req['start_date'])?Carbon::parse($req['start_date']):$promo->start_date;
+                $promo->end_date                     = !empty($req['end_date'])?Carbon::parse($req['end_date']):$promo->end_date;
+                $promo->condition_info_apply         = !empty($req['condition_info_apply'])?$req['condition_info_apply']:$promo->condition_info_apply;
+                $promo->save();
+            DB::commit();
+            return $promo;
+        }catch(\Exception $e) {
+            DB::rollBack();         
+            return ["data" => ["message" => $e]];
+        }
+        
+
     }
 }
