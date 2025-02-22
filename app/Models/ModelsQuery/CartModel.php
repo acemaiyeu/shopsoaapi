@@ -51,17 +51,40 @@ class CartModel extends Model
                     if (!empty(auth()->user())){
                         $cart->user_id = auth()->user()->id;
                         $cart->phone_number = auth()->user()->phone;
+                        $cart->username = auth()->user()->username;
                     }
                 }
             }
             if (!empty($cart->warehouse_id)){
+                
+
                 $check_product = Warehouse::whereNull('deleted_at')->whereHas('details', function($query) use($request){
                     $query->where('product_id', $request['product_id'])->whereHas('product', function($query) use($request){
                         $query->where('qty','>=', $request['qty']);
                     });
                 })->where('id',$cart->warehouse_id)->first();
                 if (!$check_product){
-                    return ["data" => ["message" => "Sản phẩm đã hết trong kho bạn vui lòng chọn sản phẩm khác"]];
+                    $product_ids = !empty($cart->details)?$cart->details->pluck('product.id'):[];
+                    
+                    $product_ids[] = $request['product_id'];
+                    // dd($product_ids);
+                    $check =  DB::select("
+                    SELECT count(wd.warehouse_id) FROM  warehouses w 
+                    join warehouse_details wd ON w.id = wd.warehouse_id 
+                    WHERE product_id IN (?) 
+                    AND  w.deleted_at IS NULL 
+                    AND  wd.deleted_at IS NULL 
+                    GROUP BY  wd.warehouse_id 
+                    HAVING COUNT(wd.warehouse_id) = ?
+   
+                   
+               ", [$product_ids, count($product_ids)]);
+                   if (count($check) != count($product_ids)){
+                        return ["data" => ["message" => "Không tìm thấy kho có tất cả sản phẩm của bạn"]];
+                   }else{
+                        $cart->warehouse_id = $check->id;
+                   }
+                    
                 }
             }
             // $cart->user_id = !empty($cart->user_id)?$cart->user_id:(auth()->user->id??null);
@@ -125,7 +148,7 @@ class CartModel extends Model
             return $cart;
         }catch(\Exception $e) {
             DB::rollBack();
-          
+          dd($e);
             return ["data" => ["message" => $e]];
         }
     }

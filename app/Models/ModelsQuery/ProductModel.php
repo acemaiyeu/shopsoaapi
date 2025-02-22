@@ -38,6 +38,9 @@ class ProductModel extends Model
             // dd(explode(",", $cleanString));
             $query->whereIn('brand', explode(",", $cleanString));
         }   
+        $query->whereHas('warehouse_details', function($query){
+                $query->whereNull('deleted_at');
+        });
 
         $limit = $request['limit'] ?? 10;
         if($limit == 1){
