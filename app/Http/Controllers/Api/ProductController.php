@@ -21,8 +21,14 @@ class ProductController extends Controller
 
     }
     public function index(Request $request)
-    {   $request['limit'] = 1000;
+    { 
         $products =  $this->product_model->getAllProducts($request);
+        return fractal($products, new ProductTransformer())->respond();
+    }
+    
+    public function indexByAdmin(Request $request)
+    {   $request['limit'] = 1000;
+        $products =  $this->product_model->getAllProductsByAdmin($request);
         return fractal($products, new ProductTransformer())->respond();
     }
     public function getFillterForProductType(Request $request){
