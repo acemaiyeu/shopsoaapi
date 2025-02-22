@@ -61,6 +61,7 @@ Route::group([
         //Order
         Route::post('/confirm-order', [OrderController::class, 'confirmOrder']);
         Route::get('/order-detail/{phone}/{code}', [OrderController::class, 'detail']);
+        Route::get('/my-order', [OrderController::class, 'myOrder']);
 
         //PRomotion Product Page Home
         Route::get('/promotion_show', [PromotionController::class, 'getPromotionsForWeb']);
