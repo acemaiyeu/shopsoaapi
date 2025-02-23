@@ -132,29 +132,37 @@ class UserController extends Controller
         'image' => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
     ]);
 
-    // Lưu file vào storage/app/public/uploads
-    $path = $request->file('image')->store('uploads', 'public');
+    // Lấy file từ request
+    $file = $request->file('image');
+
+    // Tạo tên file mới (để tránh trùng)
+    $fileName = time() . '_' . $file->getClientOriginalName();
+
+    // Di chuyển file vào public/img/
+    $file->move(public_path('img'), $fileName);
 
     // Trả về URL công khai
     return response()->json([
-        'url' => asset("storage/$path")
+        'url' => url("img/$fileName")
     ]);
 }
-    public function getImage(Request $req)
-    {
-        $fileName = $req->input('file_name'); // Lấy tên file từ request
-        $imagePath = public_path('img/' . $fileName); // Đường dẫn file ảnh
-    
-        if (File::exists($imagePath)) {
-            return url('img/' . $fileName); // Trả về URL đầy đủ
-         
-        }
-    
-        return response()->json([
-            'message' => 'Ảnh không tồn tại',
-            'image' => null
-        ], 404);
+public function getImage(Request $req)
+{
+    $fileName = $req->input('file_name'); // Lấy tên file từ request
+    $imagePath = public_path('img/' . $fileName); // Đường dẫn file ảnh
+
+    if (File::exists($imagePath)) {
+        return url('img/' . $fileName); // Trả về URL đầy đủ
+     
     }
+
+    return response()->json([
+        'message' => 'Ảnh không tồn tại',
+        'image' => null
+    ], 404);
+}
+
+    
     public function register(RegisterValidator $request)
     {
 
