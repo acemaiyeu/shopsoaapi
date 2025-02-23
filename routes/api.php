@@ -73,7 +73,7 @@ Route::group([
         Route::post('/upload', [UserController::class, 'upload2']);
         
         Route::get('/image/{file_name}', [UserController::class, 'getImage']);
-        Route::get('/list-file/{path}', [UserController::class, 'listFiles']);
+        Route::get('/list-file', [UserController::class, 'listFiles']);
         
         
         //Warranty  

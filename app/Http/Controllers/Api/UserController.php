@@ -12,6 +12,7 @@ use App\Models\User;
 // use App\Http\Requests\RegisterValidator;
 use App\Http\Requests\RegisterValidator;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Storage; 
 use Illuminate\Support\Facades\Response;
 
 class UserController extends Controller
@@ -157,10 +158,13 @@ public function getImage($filename, Request $req)
 
     return Response::make($file, 200)->header("Content-Type", $type);
 }
-public function listFiles($path)
+public function listFiles(Request $req)
     {
-        $directory = 'public/' . $path; // Thư mục cần lấy danh sách tệp
-        $files = Storage::files($directory); // Lấy danh sách tệp trong thư mục
+        $directory = 'public/'; // Thư mục cần lấy danh sách tệp
+        if ( !empty($req['path'])){
+            $directory = $req['path'];
+        }
+        $files = Storage::allFiles($directory); // Lấy danh sách tệp trong thư mục
 
         // Chuyển đổi đường dẫn từ storage thành public URL
         $fileUrls = array_map(function ($file) {
