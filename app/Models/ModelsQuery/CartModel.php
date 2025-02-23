@@ -51,7 +51,7 @@ class CartModel extends Model
                     if (!empty(auth()->user())){
                         $cart->user_id = auth()->user()->id;
                         $cart->phone_number = auth()->user()->phone;
-                        $cart->username = auth()->user()->username;
+                        $cart->user_name = auth()->user()->username;
                     }
                 }
             }
@@ -148,7 +148,7 @@ class CartModel extends Model
             return $cart;
         }catch(\Exception $e) {
             DB::rollBack();
-          dd($e);
+        //   dd($e);
             return ["data" => ["message" => $e]];
         }
     }
