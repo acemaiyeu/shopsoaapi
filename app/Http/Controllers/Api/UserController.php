@@ -99,7 +99,7 @@ class UserController extends Controller
     }
     public function uploadImage(Request $request)
     {
-        
+      
         // Kiểm tra xem có file được gửi lên không
         if (!$request->hasFile('image')) {
             return response()->json(['message' => 'Không có file nào được tải lên'], 400);
@@ -109,15 +109,16 @@ class UserController extends Controller
 
         // Định dạng tên file
         $fileName = $file->getClientOriginalName();
-        if(File::exists(public_path('img/' . $fileName))){
+        
+        if(File::exists(public_path('img\\' . $fileName))){
             return response()->json([
                 'message' => 'Tải lên thất bại. Tên file đã có trên server',
-                'filePath' => url('img/' . $fileName)
+                'filePath' => url(public_path() . '\\img\\' . $fileName)
             ],400);
         }
 
         // Lưu file vào thư mục public/img
-        $file->move(public_path('img'), $fileName);
+        $file->move(public_path() . "\\img\\", $fileName);
 
         // Trả về đường dẫn file sau khi upload
         return response()->json([
@@ -155,6 +156,9 @@ class UserController extends Controller
         $user->username = !empty($request['username'])?$request['username']:"";
         $user->save();
         return response()->json(['username' => $user->email]);
+    }
+    public function getPublicPath(){
+        return public_path();
     }
 
 }

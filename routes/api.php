@@ -72,7 +72,7 @@ Route::group([
         Route::post('/upload', [UserController::class, 'uploadImage']);
         Route::get('/image', [UserController::class, 'getImage']);
         
-        //Warranty
+        //Warranty  
         Route::get('/warranty-detail/{code}', [WarrantyController::class, 'getWarrantyByCode']);
 
         Route::post('/register', [UserController::class, 'register']);
@@ -135,4 +135,5 @@ Route::group([
     
 });
 // Route::group(['prefix' => 'v0'])->get('/products', [ProductController::class, 'index']);
+
 
