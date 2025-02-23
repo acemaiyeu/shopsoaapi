@@ -12,6 +12,8 @@ use App\Http\Controllers\Api\OrderController;
 use App\Http\Controllers\Api\ProductVarianController;
 use App\Http\Controllers\Api\WarehouseController;
 use App\Http\Controllers\Api\WarrantyController;
+use App\Http\Controllers\Api\PostController;
+use App\Http\Controllers\Api\CategoryController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -81,6 +83,11 @@ Route::group([
 
         Route::post('/register', [UserController::class, 'register']);
         Route::get('/warranty/{warhouse_id}/{order_id}', [WarrantyController::class, 'getWarrantyByWarhouseAndOrder']);
+
+        //Post
+        Route::get('/posts', [PostController::class, 'getAllPost']);
+        Route::get('/post/{id}', [PostController::class, 'getDetailPost']);
+        Route::post('/post/comment/{id}/{comment}', [PostController::class, 'comment']);
     });
 
 
@@ -137,6 +144,18 @@ Route::group([
     //Warranty
     Route::get('/warranty/{warhouse_id}/{order_id}', [WarrantyController::class, 'getWarrantyByWarhouseAndOrder']);
     
+
+    //Post
+    Route::get('/posts', [PostController::class, 'getAllPostForAdmin']);
+    Route::get('/post/{id}', [PostController::class, 'getDetailPostForAdmin']);
+    Route::post('/post', [PostController::class, 'savePost']);
+    Route::delete('/post/{id}', [PostController::class, 'deleteById']);
+
+
+    //Category
+    Route::get('/categories', [CategoryController::class, 'getAllCategoryForAdmin']);
+    Route::get('/category/{id}', [CategoryController::class, 'getDetailCategoryForAdmin']);
+    Route::delete('/category/{id}', [CategoryController::class, 'deleteById']);
 });
 // Route::group(['prefix' => 'v0'])->get('/products', [ProductController::class, 'index']);
 
