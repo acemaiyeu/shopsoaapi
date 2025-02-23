@@ -110,20 +110,20 @@ class UserController extends Controller
         // Định dạng tên file
         $fileName = $file->getClientOriginalName();
         
-        if(File::exists(public_path('img\\' . $fileName))){
+        if(File::exists(public_path($fileName))){
             return response()->json([
                 'message' => 'Tải lên thất bại. Tên file đã có trên server',
-                'filePath' => url(public_path() . '\\img\\' . $fileName)
+                'filePath' => url(public_path(). $fileName)
             ],400);
         }
 
         // Lưu file vào thư mục public/img
-        $file->move(public_path() . "\\img\\", $fileName);
+        $file->move(public_path(), $fileName);
 
         // Trả về đường dẫn file sau khi upload
         return response()->json([
             'message' => 'Tải lên thành công',
-            'filePath' => url('img/' . $fileName)
+            'filePath' => url($fileName)
         ]);
     }
     public function getImage(Request $req)
