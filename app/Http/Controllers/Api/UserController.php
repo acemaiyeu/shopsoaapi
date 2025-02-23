@@ -14,6 +14,8 @@ use App\Http\Requests\RegisterValidator;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage; 
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
@@ -99,35 +101,35 @@ class UserController extends Controller
         $session->save();
         return ['status' => 200];
     }
-    public function uploadImage(Request $request)
-    {
+    // public function uploadImage(Request $request)
+    // {
       
-        // Kiểm tra xem có file được gửi lên không
-        if (!$request->hasFile('image')) {
-            return response()->json(['message' => 'Không có file nào được tải lên'], 400);
-        }
+    //     // Kiểm tra xem có file được gửi lên không
+    //     if (!$request->hasFile('image')) {
+    //         return response()->json(['message' => 'Không có file nào được tải lên'], 400);
+    //     }
 
-        $file = $request->file('image');
+    //     $file = $request->file('image');
 
-        // Định dạng tên file
-        $fileName = $file->getClientOriginalName();
+    //     // Định dạng tên file
+    //     $fileName = $file->getClientOriginalName();
         
-        if(File::exists(public_path($fileName))){
-            return response()->json([
-                'message' => 'Tải lên thất bại. Tên file đã có trên server',
-                'filePath' => url(public_path(). $fileName)
-            ],400);
-        }
+    //     if(File::exists(public_path($fileName))){
+    //         return response()->json([
+    //             'message' => 'Tải lên thất bại. Tên file đã có trên server',
+    //             'filePath' => url(public_path(). $fileName)
+    //         ],400);
+    //     }
 
-        // Lưu file vào thư mục public/img
-        $file->move(public_path(), $fileName);
+    //     // Lưu file vào thư mục public/img
+    //     $file->move(public_path(), $fileName);
 
-        // Trả về đường dẫn file sau khi upload
-        return response()->json([
-            'message' => 'Tải lên thành công',
-            'filePath' => url($fileName)
-        ]);
-    }
+    //     // Trả về đường dẫn file sau khi upload
+    //     return response()->json([
+    //         'message' => 'Tải lên thành công',
+    //         'filePath' => url($fileName)
+    //     ]);
+    // }
     public function upload2(Request $request)
 {
     $request->validate([
@@ -143,21 +145,21 @@ class UserController extends Controller
         'path' => $path
     ]);
 }
-public function getImage($filename, Request $req)
-{
-    $path = public_path("storage/uploads/" . $filename);
-    if (!empty($req['path'])){
-        $path = public_path($req['path'] . $filename);
-    }
-    if (!File::exists($path)) {
-        return response()->json(['message' => 'Image not found',"path" => $path], 404);
-    }
+// public function getImage($filename, Request $req)
+// {
+//     $path = public_path("storage/uploads/" . $filename);
+//     if (!empty($req['path'])){
+//         $path = public_path($req['path'] . $filename);
+//     }
+//     if (!File::exists($path)) {
+//         return response()->json(['message' => 'Image not found',"path" => $path], 404);
+//     }
 
-    $file = File::get($path);
-    $type = File::mimeType($path);
+//     $file = File::get($path);
+//     $type = File::mimeType($path);
 
-    return Response::make($file, 200)->header("Content-Type", $type);
-}
+//     return Response::make($file, 200)->header("Content-Type", $type);
+// }
 public function listFiles(Request $req)
     {
         $directory = 'public/'; // Thư mục cần lấy danh sách tệp
@@ -194,6 +196,41 @@ public function listFiles(Request $req)
     }
     public function getPublicPath(){
         return public_path();
+    }
+    public function uploadImage(Request $request)
+    {
+       
+        $request->validate([
+            'file' => 'required|image|max:2048', // Chỉ nhận ảnh, max 2MB
+        ]);
+        
+        $file = $request->file('file');
+        $fileName = time() . '_' . Str::random(10) . '.' . $file->getClientOriginalExtension();
+        $fileContent = base64_encode(file_get_contents($file));
+
+        $githubRepo = env('GITHUB_REPO');
+        $githubBranch = env('GITHUB_BRANCH');
+        $githubToken = env('GITHUB_TOKEN');
+        // dd($githubRepo,$githubBranch,$githubToken);
+        $githubUrl = "https://api.github.com/repos/{$githubRepo}/contents/public/img/{$fileName}";
+        
+        $response = Http::withHeaders([
+            'Authorization' => "token {$githubToken}",
+            'Accept' => 'application/vnd.github.v3+json',
+        ])->put($githubUrl, [
+            'message' => "Upload image {$fileName}",
+            'content' => $fileContent,
+            'branch' => $githubBranch,
+        ]);
+
+        if ($response->failed()) {
+            return response()->json(['error' => 'Upload failed'], 500);
+        }
+
+        return response()->json([
+            'message' => 'Upload thành công!',
+            'url' => "https://raw.githubusercontent.com/{$githubRepo}/{$githubBranch}/public/img/{$fileName}"
+        ]);
     }
 
 }

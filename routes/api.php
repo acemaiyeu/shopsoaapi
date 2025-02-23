@@ -70,7 +70,7 @@ Route::group([
         Route::get('/get-location', [WarehouseController::class, 'getLocation']);
         
         // Route::post('/upload', [UserController::class, 'uploadImage']);
-        Route::post('/upload', [UserController::class, 'upload2']);
+        Route::post('/upload', [UserController::class, 'uploadImage']);
         
         Route::get('/image/{file_name}', [UserController::class, 'getImage']);
         Route::get('/list-file', [UserController::class, 'listFiles']);

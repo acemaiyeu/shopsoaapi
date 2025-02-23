@@ -33,6 +33,16 @@ class ProductModel extends Model
         if (!empty($request['max_price'])){
             $query->where('price','<=', $request['max_price']);
         }
+        if (!empty($request['category_name'])){
+            $query->whereHas('category', function($query) use($request){
+                    $query->where('name', 'like', "%" . $request['category_name'], "%");
+            });
+        }
+        if (!empty($request['category_code'])){
+            $query->whereHas('category', function($query) use($request){
+                    $query->where('code',"%" . $request['category_code'], "%");
+            });
+        }
         if(!empty($request['brand'])){
             $cleanString = trim($request['brand'], "[]");
             // dd(explode(",", $cleanString));
