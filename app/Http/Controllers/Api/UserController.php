@@ -138,14 +138,18 @@ class UserController extends Controller
 
     // Trả về URL công khai
     return response()->json([
-        'url' => asset("storage/$path")
+        'url' => asset("storage/$path"),
+        'path' => $path
     ]);
 }
-public function getImage($filename)
+public function getImage($filename, Request $req)
 {
     $path = public_path("storage/uploads/" . $filename);
+    if (!empty($req['path'])){
+        $path = public_path($req['path'] . $filename);
+    }
     if (!File::exists($path)) {
-        return response()->json(['message' => 'Image not found'], 404);
+        return response()->json(['message' => 'Image not found',"path" => $path], 404);
     }
 
     $file = File::get($path);
