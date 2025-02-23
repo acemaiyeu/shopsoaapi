@@ -157,6 +157,20 @@ public function getImage($filename, Request $req)
 
     return Response::make($file, 200)->header("Content-Type", $type);
 }
+public function listFiles($path)
+    {
+        $directory = 'public/' . $path; // Thư mục cần lấy danh sách tệp
+        $files = Storage::files($directory); // Lấy danh sách tệp trong thư mục
+
+        // Chuyển đổi đường dẫn từ storage thành public URL
+        $fileUrls = array_map(function ($file) {
+            return asset(str_replace('public/', 'storage/', $file));
+        }, $files);
+
+        return response()->json([
+            'files' => $fileUrls
+        ]);
+    }
 
     public function register(RegisterValidator $request)
     {
