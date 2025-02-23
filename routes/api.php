@@ -69,7 +69,9 @@ Route::group([
         //Warehouse
         Route::get('/get-location', [WarehouseController::class, 'getLocation']);
         
-        Route::post('/upload', [UserController::class, 'uploadImage']);
+        // Route::post('/upload', [UserController::class, 'uploadImage']);
+        Route::post('/upload', [UserController::class, 'upload2']);
+        
         Route::get('/image', [UserController::class, 'getImage']);
         
         //Warranty  

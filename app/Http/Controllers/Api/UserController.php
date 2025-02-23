@@ -126,6 +126,20 @@ class UserController extends Controller
             'filePath' => url($fileName)
         ]);
     }
+    public function upload2(Request $request)
+{
+    $request->validate([
+        'image' => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
+    ]);
+
+    // Lưu file vào storage/app/public/uploads
+    $path = $request->file('image')->store('uploads', 'public');
+
+    // Trả về URL công khai
+    return response()->json([
+        'url' => asset("storage/$path")
+    ]);
+}
     public function getImage(Request $req)
     {
         $fileName = $req->input('file_name'); // Lấy tên file từ request
