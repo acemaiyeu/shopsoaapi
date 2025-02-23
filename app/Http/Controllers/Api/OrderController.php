@@ -59,7 +59,7 @@ class OrderController extends Controller
        
        $order =  $this->orderModel->createOrder($req);
        if ($order['status_code'] == 400){
-        return response($order['message'],400);
+        return response(["data" => ["message" => $order['message']]],400);
        }
         return fractal($order, new OrderTransformer())->respond();
     }

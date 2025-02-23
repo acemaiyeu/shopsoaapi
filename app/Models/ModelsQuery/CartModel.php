@@ -237,16 +237,16 @@ class CartModel extends Model
 
 
         $nearestWarehouse = DB::select("
-                 SELECT  w.id, w.code, w.name,  w.lat, w.lon,
-                    ROUND(
-						  (6371 * ACOS(
-                        COS(RADIANS(?)) * COS(RADIANS(w.lat)) * 
-                        COS(RADIANS(w.lon) - RADIANS(?)) + 
-                        SIN(RADIANS(?)) * SIN(RADIANS(w.lat))
+                    SELECT  w.id, w.code, w.name,  w.lat, w.lon,
+                        ROUND(
+                            (6371 * ACOS(
+                            COS(RADIANS(?)) * COS(RADIANS(w.lat)) * 
+                            COS(RADIANS(w.lon) - RADIANS(?)) + 
+                            SIN(RADIANS(?)) * SIN(RADIANS(w.lat))
                     )), 2) AS distance
                     
                 FROM warehouses w
-                 WHERE    (SELECT id FROM warehouse_details wd WHERE wd.warehouse_id = w.id AND wd.product_id IN (?) AND wd.qty >= ?) > ?
+                 WHERE    (SELECT id FROM warehouse_details wd WHERE wd.warehouse_id = w.id AND wd.product_id IN (?) AND wd.qty >= ?) >= ?
 
                 
             ", [$lat, $lon, $lat, $product_id_lists, $total_qty, count($product_ids)]);
