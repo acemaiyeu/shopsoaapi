@@ -12,6 +12,7 @@ use App\Models\User;
 // use App\Http\Requests\RegisterValidator;
 use App\Http\Requests\RegisterValidator;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Response;
 
 class UserController extends Controller
 {
@@ -132,37 +133,27 @@ class UserController extends Controller
         'image' => 'required|image|mimes:jpg,jpeg,png,gif|max:2048',
     ]);
 
-    // Lấy file từ request
-    $file = $request->file('image');
-
-    // Tạo tên file mới (để tránh trùng)
-    $fileName = time() . '_' . $file->getClientOriginalName();
-
-    // Di chuyển file vào public/img/
-    $file->move(public_path('img'), $fileName);
+    // Lưu file vào storage/app/public/uploads
+    $path = $request->file('image')->store('uploads', 'public');
 
     // Trả về URL công khai
     return response()->json([
-        'url' => url("img/$fileName")
+        'url' => asset("storage/$path")
     ]);
 }
-public function getImage(Request $req)
+public function getImage($filename)
 {
-    $fileName = $req->input('file_name'); // Lấy tên file từ request
-    $imagePath = public_path('img/' . $fileName); // Đường dẫn file ảnh
-
-    if (File::exists($imagePath)) {
-        return url('img/' . $fileName); // Trả về URL đầy đủ
-     
+    $path = public_path("storage/uploads/" . $filename);
+    if (!File::exists($path)) {
+        return response()->json(['message' => 'Image not found'], 404);
     }
 
-    return response()->json([
-        'message' => 'Ảnh không tồn tại',
-        'image' => null
-    ], 404);
+    $file = File::get($path);
+    $type = File::mimeType($path);
+
+    return Response::make($file, 200)->header("Content-Type", $type);
 }
 
-    
     public function register(RegisterValidator $request)
     {
 
