@@ -30,4 +30,25 @@ class WarrantyController extends Controller
         $warranty =  $this->warrantyModel->getWarrantyByCode($req);
         return fractal($warranty, new WarrantyTransformer())->respond();
     }
+    public function updateOrderWarranty(Request $req){
+        $order = $req['order'];
+        if (!is_array($order['details'])){
+            return response(["data" => ['message' => "Dữ liệu phải là array"]], 400);
+        }
+        $warranty =  $this->warrantyModel->updateOrderWarranty($order);
+        if (is_array($warranty)){
+            return response(["data" => ['message' => $warranty['message']]], 400);
+        }
+            return response(["data" => ['message' => "Cập nhật thành công!"]]);
+    }
+    public function updateWarrantyDetail(Request $req){
+        if (!is_array($req['details'])){
+            return response(["data" => ['message' => "Dữ liệu phải là array"]], 400);
+        }
+        $warranty =  $this->warrantyModel->updateWarrantyDetail($req['details']);
+        if (is_array($warranty)){
+            return response(["data" => ['message' => $warranty['message']]], 400);
+        }
+            return response(["data" => ['message' => "Cập nhật thành công!"]]);
+    }
 }

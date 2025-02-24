@@ -10,6 +10,8 @@ use Laravel\Sanctum\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use App\Models\Cart;
 use App\Models\Order;
+use App\Models\Role;
+use App\Models\PermissionDetail;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -78,5 +80,11 @@ class User extends Authenticatable implements JWTSubject
         return $this->where('email', $identifier)
                     ->orWhere('username', $identifier)
                     ->first();
+    }
+    public function role(){
+        return $this->hasOne(Role::class, 'code', 'role_code')->select('code','name');
+    }
+    public function permission_details(){
+        return $this->hasMany(PermissionDetail::class, 'user_id', 'id')->with('permission')->select('id','user_id','permission_id');
     }
 }

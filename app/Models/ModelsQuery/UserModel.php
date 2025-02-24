@@ -8,6 +8,8 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Cart;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\DB;
 
 class UserModel extends Model
 {
@@ -25,5 +27,28 @@ class UserModel extends Model
             return $query->paginate($limit);
         }   
     }
-   
+   public function changePassword($req){
+    try{
+        DB::beginTransaction();
+            $user = User::whereNull('deleted_at')->find($req['id']);
+            if(empty($user)){
+                return ['message' => "Không tìm thấy tài khoản!"];
+            }
+            if (!Hash::check($req['password_old'], $user->password) && $user->id != auth()->user()->id){
+                return ['message' => "Mật khẩu không đúng với tài khoản!"];
+            }
+            if ($req['password_new'] != $req['password_confirm']){
+                return ['message' => "Mật khẩu lặp lại không trùng với mật khẩu mới!"];
+            }
+            $user->password = Hash::make($req['password_new']);
+            $user->save();
+            
+        DB::commit();
+        return $user;
+    }catch(\Exception $e) {
+        DB::rollBack();
+    //   dd($e);
+        return ["data" => ["message" => $e]];
+    }
+   }
 }

@@ -72,6 +72,7 @@ class OrderController extends Controller
             return response($order['message'],400);
            }
         //    return $order;
+        return $order;
             return fractal($order, new OrderTransformer())->respond();
     }
     public function detailAdmin(Request $req, $id){

@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\OrderDetail;
 use App\Models\User;
+use App\Models\Warranty;
 
 class Order extends Model
 {
@@ -32,4 +33,5 @@ class Order extends Model
     public function details(){
         return $this->hasMany(OrderDetail::class, 'order_id', 'id')->with('product')->select('id','order_id','product_id','product_code','product_name','price','qty','discount_code','discount_price', 'discount_name','total_price','price_text','total_price_text','discount_price_text');
     }
+    
 }

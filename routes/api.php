@@ -14,6 +14,7 @@ use App\Http\Controllers\Api\WarehouseController;
 use App\Http\Controllers\Api\WarrantyController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\CategoryController;
+use App\Http\Controllers\Api\PermissionController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -143,6 +144,8 @@ Route::group([
 
     //Warranty
     Route::get('/warranty/{warhouse_id}/{order_id}', [WarrantyController::class, 'getWarrantyByWarhouseAndOrder']);
+    Route::post('/order-warranty', [WarrantyController::class, 'updateOrderWarranty']);
+    Route::post('/warranty-detail', [WarrantyController::class, 'updateWarrantyDetail']);
     
 
     //Post
@@ -156,6 +159,18 @@ Route::group([
     Route::get('/categories', [CategoryController::class, 'getAllCategoryForAdmin']);
     Route::get('/category/{id}', [CategoryController::class, 'getDetailCategoryForAdmin']);
     Route::delete('/category/{id}', [CategoryController::class, 'deleteById']);
+
+
+    //
+    //Permision
+    
+    Route::get('/permissions', [PermissionController::class, 'getPermission']);
+    Route::post('/permission', [PermissionController::class, 'savePermission']);
+    Route::get('/users-permission', [PermissionController::class, 'getUserPermission']);
+    
+
+    // User
+    Route::post('/user/changepassword', [UserController::class, 'changePassword']);
 });
 // Route::group(['prefix' => 'v0'])->get('/products', [ProductController::class, 'index']);
 
