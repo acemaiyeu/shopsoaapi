@@ -87,4 +87,14 @@ class User extends Authenticatable implements JWTSubject
     public function permission_details(){
         return $this->hasMany(PermissionDetail::class, 'user_id', 'id')->with('permission')->select('id','user_id','permission_id');
     }
+    public function permissions()
+    {
+        return $this->belongsToMany(Permission::class, 'permission_details')->with;
+    }
+    public function hasPermission($permissionCode)
+    {
+        return $this->permission_details()->whereHas('permission', function($query) use($permissionCode) {
+            $query->where('code', $permissionCode);
+        })->exists();
+    }
 }

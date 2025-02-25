@@ -165,7 +165,7 @@ Route::group([
     //
     //Permision
     
-    Route::get('/permissions', [PermissionController::class, 'getPermission']);
+    Route::middleware(['permission:VIEW-ALL-ORDER'])->get('/permissions', [PermissionController::class, 'getPermission']);
     Route::post('/permission', [PermissionController::class, 'savePermission']);
     Route::post('/permission-detail', [PermissionController::class, 'savePermissionDetail']);
     Route::get('/users-permission', [PermissionController::class, 'getUserPermission']);
