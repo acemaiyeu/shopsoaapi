@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\WarrantyController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\PermissionController;
+use App\Http\Controllers\Api\RoleController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -169,8 +170,11 @@ Route::group([
     Route::post('/permission', [PermissionController::class, 'savePermission']);
     Route::post('/permission-detail', [PermissionController::class, 'savePermissionDetail']);
     Route::get('/users-permission', [PermissionController::class, 'getUserPermission']);
+    Route::get('/roles', [PermissionController::class, 'getAllRole']);
     
-
+    
+    //Role
+    Route::post('/roles', [RoleController::class, 'saveRole']);
 
 
     // User

@@ -18,7 +18,7 @@ class AdminApi
         if (empty(auth()->user())){
             return response(["message" => "Bạn không có quyền truy cập api này"], 400);
         }
-        if (auth()->user()->role_code == "SUPERADMIN" || auth()->user()->role_code == "ADMIN"){
+        if (auth()->user()->role_code == "SUPERADMIN" || auth()->user()->role_code == "ADMIN" || auth()->user()->role_code == "DISTRIBUTOR"){
             return $next($request);
         }else{
             return response(["message" => "Bạn không có quyền truy cập api này"], 400);

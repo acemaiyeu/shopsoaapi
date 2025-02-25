@@ -9,16 +9,18 @@ use App\Http\Requests\RegisterValidator;
 use Illuminate\Support\Facades\Response;
 use App\Transformers\PermissionTransformer;
 use App\Transformers\UserPermissionTransformer;
-use App\Http\Requests\savePermissionValidate;
-
+use App\Transformers\RoleTransformer;
+use App\Models\ModelsQuery\RoleModel;
 class PermissionController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     protected $permissionModel;
-    public function __construct(PermissionModel $model) {
+    protected $roleModel;
+    public function __construct(PermissionModel $model, RoleModel $modelRole) {
         $this->permissionModel = $model;
+        $this->roleModel = $modelRole;
     }
     public function getPermission(Request $req){
         $permissions = $this->permissionModel->getPermission($req);
@@ -44,4 +46,9 @@ class PermissionController extends Controller
         $users = $this->permissionModel->getUserPermission($req);
         return fractal($users, new UserPermissionTransformer())->respond();
     }
+    public function getAllRole(Request $req){
+        $users = $this->roleModel->getAllRole($req);
+        return fractal($users, new RoleTransformer())->respond();
+    }
+    
 }
