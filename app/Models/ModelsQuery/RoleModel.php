@@ -39,6 +39,9 @@ class RoleModel extends Model
             if ($check){
                     return ["message" => "code đã tồn tại"];
             }
+            if (!empty($request['code'])){
+                $role = Role::whereNull('deleted_at')->where('code', $request['code'])->first();
+            }
                 $role->code = $request['code'];
                 $role->name = $request['name'];
                 $role->created_by = auth()->user()->id;
