@@ -54,18 +54,29 @@ class PermissionModel extends Model
         if (!empty($request['id'])){
             $query->where('id', $request['id']);
         }
-        if (!empty($request['code'])){
-            $query->where('code', $request['code']);
+        if (!empty($request['phone'])){
+            $query->where('phone', $request['phone']);
+        }
+        if (!empty($request['email'])){
+            $query->where('email', $request['email']);
         }
         if (!empty($request['createdby'])){
             $query->whereHas('createdBy', function($query) use($request){
                 $query->where('name', 'like', "%". $request['createdby'] . "%");
             });
         }    
-        $query->whereHas('role', function($query){
+        $query->whereHas('role', function($query) use($request){
                 $query->where('code', '!=', 'SUPERADMIN');
         });
-        $query->orwhere('id', auth()->user()->id);
+        if(!empty($request['role_name'])){
+            $query->whereHas('role', function($query) use($request){
+                $query->where('name', 'like',  "%" . $request['role_name'] . "%");
+            });
+        }
+        if (empty($request['username']) && empty($request['phone'] && empty($request['email']) && empty($request['role']))){
+            $query->orwhere('id', auth()->user()->id);
+        }
+        
         $query->with('role');
         $query->with('permission_details');
         $limit = $request['limit'] ?? 10;
@@ -79,7 +90,7 @@ class PermissionModel extends Model
     }
 
     
-    public function savePermission($req){
+    public function savePermissionUser($req){
         try {
             DB::beginTransaction();
             
@@ -114,6 +125,32 @@ class PermissionModel extends Model
             return ["message" => $e];
         }
     }
+    public function savePermission($req){
+    try {
+        DB::beginTransaction();
+        
+        $permission = new Permission();
+        $check_exist = Permission::whereNull('deleted_at')->where('code', $req['code'])->exists();
+        if ($check_exist){
+            return ["message" => "Mã đã tồn tại."];
+        }
+        if (!empty($req['id'])){
+            $permission  = Permission::whereNull('deleted_at')->find($req['id']);
+            $post->updated_at = auth()->user()->id;
+        }
+        $permission->code = $req['code'];
+        $permission->name = $req['name'];
+        if(empty($permission->id)){
+            $permission->created_by = auth()->user()->id;
+        }
+        $permission->save();
+        DB::commit();
+        return $permission;
+    } catch (\Exception $e) {
+        DB::rollBack();
+        return ["message" => $e];
+    }
+}
     // public function deleteById($id){
     //     try {
     //         DB::beginTransaction();

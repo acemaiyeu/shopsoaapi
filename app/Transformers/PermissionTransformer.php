@@ -14,7 +14,7 @@ class PermissionTransformer extends TransformerAbstract
         return [
             'id'               => $permission->id,
             'code'             => $permission->code,
-            'name'          => $permission->cart_id,
+            'name'          => $permission->name,
             'details'           => $permission->details??[],
             'created_at'       => Carbon::parse($permission->created_at)->format('d-m-Y')
         ];

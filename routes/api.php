@@ -37,6 +37,7 @@ Route::group([
 ], function ($router) {
     
     Route::post('login', [AuthController::class, 'login']);
+    Route::post('login-admin', [AuthController::class, 'loginAdmin']);
     Route::post('logout', 'AuthController@logout');
     Route::post('refresh', 'AuthController@refresh');
     Route::get('profile', [AuthController::class, 'profile']);
@@ -166,11 +167,16 @@ Route::group([
     
     Route::get('/permissions', [PermissionController::class, 'getPermission']);
     Route::post('/permission', [PermissionController::class, 'savePermission']);
+    Route::post('/permission-detail', [PermissionController::class, 'savePermissionDetail']);
     Route::get('/users-permission', [PermissionController::class, 'getUserPermission']);
     
 
+
+
     // User
     Route::post('/user/changepassword', [UserController::class, 'changePassword']);
+
+
 });
 // Route::group(['prefix' => 'v0'])->get('/products', [ProductController::class, 'index']);
 

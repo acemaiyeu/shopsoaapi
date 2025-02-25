@@ -9,6 +9,7 @@ use App\Http\Requests\RegisterValidator;
 use Illuminate\Support\Facades\Response;
 use App\Transformers\PermissionTransformer;
 use App\Transformers\UserPermissionTransformer;
+use App\Http\Requests\savePermissionValidate;
 
 class PermissionController extends Controller
 {
@@ -23,13 +24,22 @@ class PermissionController extends Controller
         $permissions = $this->permissionModel->getPermission($req);
         return fractal($permissions, new PermissionTransformer())->respond();
     }
-    public function savePermission(Request $req){
+    public function savePermissionDetail(Request $req){
+        $permission = $this->permissionModel->savePermissionUser($req);
+        if (is_array($permission)){
+            return response(["data" => ["message" => $permission['message']]]);
+        }
+        return fractal($permission, new PermissionTransformer())->respond();
+    }
+    public function savePermission(savePermissionValidate $req){
+        // dd($req->all());
         $permission = $this->permissionModel->savePermission($req);
         if (is_array($permission)){
             return response(["data" => ["message" => $permission['message']]]);
         }
         return fractal($permission, new PermissionTransformer())->respond();
     }
+    
     public function getUserPermission(Request $req){
         $users = $this->permissionModel->getUserPermission($req);
         return fractal($users, new UserPermissionTransformer())->respond();
