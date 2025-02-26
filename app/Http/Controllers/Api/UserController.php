@@ -241,5 +241,39 @@ public function listFiles(Request $req)
         return response(["data" => ["message" => "Đổi mật khẩu thành công!"]],200);
     }
     
+    public function uploadToTeraBox(Request $request)
+    {
+        // Kiểm tra file được chọn
+        if (!$request->hasFile('file')) {
+            return response()->json(['error' => 'No file uploaded'], 400);
+        }
 
+        // Lấy file từ request
+        $file = $request->file('file');
+        $filePath = $file->getPathname();
+        $fileName = $file->getClientOriginalName();
+
+        // Access token của bạn (nếu có)
+        $accessToken = 'YOUR_TERABOX_ACCESS_TOKEN';
+
+        // Gửi request lên TeraBox (cần nghiên cứu API upload)
+        $client = new Client();
+        $response = $client->post('https://www.terabox.com/rest/2.0/file/upload', [
+            'headers' => [
+                'Authorization' => "Bearer $accessToken",
+            ],
+            'multipart' => [
+                [
+                    'name'     => 'file',
+                    'contents' => fopen($filePath, 'r'),
+                    'filename' => $fileName,
+                ],
+            ],
+        ]);
+
+        // Xử lý phản hồi từ TeraBox
+        $body = json_decode($response->getBody(), true);
+
+        return response()->json($body);
+    }
 }

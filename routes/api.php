@@ -16,6 +16,8 @@ use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\RoleController;
+use App\Http\Controllers\Api\ImgurController;
+use App\Http\Controllers\Api\ImageProxyController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -93,6 +95,9 @@ Route::group([
         Route::post('/post/comment', [PostController::class, 'comment']);
         Route::post('/post/comment-reply', [PostController::class, 'commentReply']);
         
+
+        Route::post('/upload-image', [ImgurController::class, 'uploadImage']);
+        Route::get('/proxy-image', [ImageProxyController::class, 'fetchImage']);
     });
 
 
