@@ -34,13 +34,11 @@ class RoleModel extends Model
     public function saveRole($request){
         try{
             DB::beginTransaction();
-                $role = new Role();
-                $check = Role::whereNull('deleted_at')->where('code', $request['code'])->exists();
-            if ($check){
-                    return ["message" => "code đã tồn tại"];
-            }
             if (!empty($request['code'])){
                 $role = Role::whereNull('deleted_at')->where('code', $request['code'])->first();
+            }
+            if (empty($role)){
+                $role = new Role();
             }
                 $role->code = $request['code'];
                 $role->name = $request['name'];
@@ -51,8 +49,9 @@ class RoleModel extends Model
         }catch(\Exception $e) {
             DB::rollBack();
         //   dd($e);
-            return ["data" => ["message" => $e]];
+            return ["message" => $e];
         }
     }
+   
     
 }

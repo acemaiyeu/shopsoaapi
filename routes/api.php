@@ -180,6 +180,8 @@ Route::group([
     
     //Role
     Route::post('/role', [RoleController::class, 'saveRole']);
+    Route::delete('/role/{code}', [RoleController::class, 'deleteByCode']);
+    
 
 
     // User
