@@ -41,12 +41,18 @@ class PostController extends Controller
        $post =  $this->postModel->getWarrantyByCode($req);
         return $post;
     }
-    public function comment($id, $comment){
-        $post =  $this->postModel->saveComment($id, $comment);
+    public function comment(Request $req){
+
+        $post =  $this->postModel->saveComment($req['id'], $req['comment']);
         return fractal($post, new PostClientTransformer())->respond();
      }
      public function savePost(Request $req){
         $post = $this->postModel->savePost($req);
         return fractal($post, new PostTransformer())->respond();
      }
+     public function commentReply(Request $req){
+      $post = $this->postModel->commentReply($req);
+      return fractal($post, new PostClientTransformer())->respond();
+   }
+     
 }

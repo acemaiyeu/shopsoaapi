@@ -90,7 +90,9 @@ Route::group([
         //Post
         Route::get('/posts', [PostController::class, 'getAllPost']);
         Route::get('/post/{id}', [PostController::class, 'getDetailPost']);
-        Route::post('/post/comment/{id}/{comment}', [PostController::class, 'comment']);
+        Route::post('/post/comment', [PostController::class, 'comment']);
+        Route::post('/post/comment-reply', [PostController::class, 'commentReply']);
+        
     });
 
 

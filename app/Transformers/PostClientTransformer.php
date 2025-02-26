@@ -11,12 +11,16 @@ class PostClientTransformer extends TransformerAbstract
     
     public function transform(Post $post)
     {
+        $comments = json_decode($post->comments)??[];
+        $sorted = collect($comments)->sortByDesc('created_at')->values()->all();
+
+        // Hiển thị kết quả
         return [
             'id' => $post->id,
             'code' => $post->code,
             'name' => $post->name,
             'createdBy' => $post->createdBy,
-            'comments' => json_decode($post->comments)??[],
+            'comments' => $sorted,
             'data'  => $post->data,
             'created_at'  => Carbon::parse($post->created_at)->format("d-m-Y"),
         ];

@@ -84,7 +84,8 @@ class PostModel extends Model
                 $user = !empty(auth()->user())?auth()->user()->username:"Không đăng nhập";
                 $comments[] = [
                     "username" => $user,
-                    "comment" => $comment
+                    "comment" => $comment,
+                    "created_at" => Carbon::parse(Carbon::now())->format('d-m-Y h:i:s')
                 ];
                 $post->comments = json_encode($comments);
                 $post->save();
@@ -95,5 +96,37 @@ class PostModel extends Model
             return $e;
         }
     }
+    public function commentReply($req){
+        try {
+            DB::beginTransaction();
+                $post  = Post::whereNull('deleted_at')->find($req['id']);
+    
+                $comments = json_decode($post->comments)??[];
+                $user = !empty(auth()->user())?auth()->user()->username:"Không đăng nhập";  
+                if (!empty($comments[$req['index']]->reply_comments)){
+                    $comments[$req['index']]->reply_comments[count($comments[$req['index']]->reply_comments)] = [
+                        "username" => $user,
+                        "comment" => $req['comment'],
+                        "created_at" => Carbon::parse(Carbon::now('Asia/Ho_Chi_Minh'))->format('d-m-Y H:i:s')
+                    ];
+                }
+                if (empty($comments[$req['index']]->reply_comments)){
+                    $comments[$req['index']]->reply_comments[0] = [
+                        "username" => $user,
+                        "comment" => $req['comment'],
+                        "created_at" => Carbon::parse(Carbon::now())->format('d-m-Y h:i:s')
+                    ];
+                }
+                
+                $post->comments = json_encode($comments);
+                $post->save();
+            DB::commit();
+            return $post;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return $e;
+        }
+    }
+    
    
 }

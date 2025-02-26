@@ -34,8 +34,11 @@ class AuthController extends Controller
         if (! $token = auth()->attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-        if (empty(request('type'))){
-            return response()->json(['data' => ["message" => "Tài khoản đăng nhập phải là admin !"]], 401);
+        if (!empty(request('type'))){
+            if (auth()->user()->role->code != "SUPERADMIN" && auth()->user()->role->code != "DISTRIBUTOR"){
+                return response()->json(['data' => ["message" => "Tài khoản đăng nhập phải là admin !"]], 401);
+            }
+           
         }
         SessionLogin::where('user_id', auth()->user()->id)->where('deleted_at', null)->update(['deleted_at' => Carbon::now()]);
         return $this->respondWithToken($token);
