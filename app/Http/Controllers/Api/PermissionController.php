@@ -33,7 +33,7 @@ class PermissionController extends Controller
         }
         return fractal($permission, new PermissionTransformer())->respond();
     }
-    public function savePermission(savePermissionValidate $req){
+    public function savePermission(Request $req){
         // dd($req->all());
         $permission = $this->permissionModel->savePermission($req);
         if (is_array($permission)){
