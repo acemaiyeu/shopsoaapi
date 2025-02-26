@@ -179,7 +179,7 @@ Route::group([
     
     
     //Role
-    Route::post('/roles', [RoleController::class, 'saveRole']);
+    Route::post('/role', [RoleController::class, 'saveRole']);
 
 
     // User
