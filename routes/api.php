@@ -67,7 +67,7 @@ Route::group([
         Route::post('/confirm-order', [OrderController::class, 'confirmOrder']);
         Route::get('/order-detail/{phone}/{code}', [OrderController::class, 'detail']);
         Route::get('/my-order', [OrderController::class, 'myOrder']);
-
+        Route::post('/order/rating', [OrderController::class, 'ratingOrder']);
         //PRomotion Product Page Home
         Route::get('/promotion_show', [PromotionController::class, 'getPromotionsForWeb']);
 
@@ -125,6 +125,9 @@ Route::group([
     Route::put('/order-update', [OrderController::class, 'updateOrder']);
     Route::get('/order-status/{id}', [OrderController::class, 'getStatus']);
 
+    //Rating order
+    
+  
     //Coupon (promocode)
     Route::get('/promocodes', [PromoCodeController::class, 'getPromoCode']);
     Route::get('/promo-detail/{id}', [PromoCodeController::class, 'detail']);
@@ -182,7 +185,7 @@ Route::group([
     // User
     Route::post('/user/changepassword', [UserController::class, 'changePassword']);
 
-
+    
 });
 // Route::group(['prefix' => 'v0'])->get('/products', [ProductController::class, 'index']);
 

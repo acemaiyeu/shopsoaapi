@@ -108,4 +108,15 @@ class OrderController extends Controller
         }
         return response(["data" => ["message" => "Không tìm thấy đơn hàng của bạn. Chắc chắn bạn đã đăng nhập?"]],400)  ;
     }   
+    public function ratingOrder(Request $req){
+        if (!empty(auth()->user())){
+            $order = $this->orderModel->ratingOrder($req);
+            if (is_array($order)){
+                return response(["data" => ["message" => $order['message']]],400);
+            }
+            return fractal($order, new OrderTransformer())->respond();
+        }
+        return response(["data" => ["message" => "Không tìm thấy đơn hàng của bạn. Chắc chắn bạn đã đăng nhập?"]],400)  ;
+    }   
+    
 }

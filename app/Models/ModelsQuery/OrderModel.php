@@ -162,4 +162,36 @@ class OrderModel extends Model
         }     
 
     }
+    public function ratingOrder($req){
+        try {
+            DB::beginTransaction();
+                $order = Order::whereNull('deleted_at')->where('user_id', auth()->user()->id)->find($req['order_id']);
+                if (empty($order)){
+                    return ["message" => "Đơn hàng không tồn tại!"];
+                }
+                if ($order->rating > 0){
+                    return ["message" => "Đơn hàng đã được đánh giá!"];
+                }
+                $order->rating = $req['star'];
+                $order->save();
+
+                $cart_details = OrderDetail::whereNull('deleted_at')->where('order_id', $order->id)->with('product')->get();
+                foreach($cart_details as $detail){
+                    $ratings = !empty($detail->product->rates)?json_decode($detail->product->rates):[];
+                    $ratings [count($ratings)] = [
+                        "order_id"  => $order->id,
+                        "user_id"   => auth()->user()->id,
+                        "rating"    => $order->rating
+                    ];
+                    $product = $detail->product;
+                    $product->rates = json_encode($ratings);
+                    $product->save();
+                }
+            DB::commit();
+            return $order;
+        } catch (\Exception $e) {
+            DB::rollBack();
+            return ["message" => $e];
+        }     
+    }
 }
