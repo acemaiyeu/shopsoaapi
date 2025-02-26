@@ -23,5 +23,13 @@ class RoleController extends Controller
             return response(["data" => ["message" => $permission['message']]]);
         }
         return fractal($role, new RoleTransformer())->respond();
+    } 
+    public function saveRole(Request $req){
+        $role = $this->RoleModel->saveRole($req);
+        if (is_array($role)){
+            return response(["data" => ["message" => $permission['message']]]);
+        }
+        return fractal($role, new RoleTransformer())->respond();
     }   
+    
 }
