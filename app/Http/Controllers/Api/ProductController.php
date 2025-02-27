@@ -85,7 +85,7 @@ class ProductController extends Controller
      */
     public function destroy(string $id)
     {
-        Product::whereNull('deleted_at')->where($id)->update(['deleted_at' => Carbon::now('Asia/Ho_Chi_Minh'), "deleted_by" => auth()->auth()->id]);
+        Product::whereNull('deleted_at')->where($id)->update(['deleted_at' => Carbon::now('Asia/Ho_Chi_Minh'), "deleted_by" => auth()->user()->id]);
         return response(["data" => ["message" => "Đã xóa thành công!"]],200);
     }
 }
