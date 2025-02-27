@@ -33,15 +33,14 @@ class ProductModel extends Model
         if (!empty($request['max_price'])){
             $query->where('price','<=', $request['max_price']);
         }
+        // dd($request['category_name']);
         if (!empty($request['category_name'])){
             $query->whereHas('category', function($query) use($request){
                     $query->where('name', 'like', "%" . $request['category_name'], "%");
             });
         }
         if (!empty($request['category_code'])){
-            $query->whereHas('category', function($query) use($request){
-                    $query->where('code',"%" . $request['category_code'], "%");
-            });
+                    $query->where('category_code',$request['category_code']);
         }
         if(!empty($request['brand'])){
             $cleanString = trim($request['brand'], "[]");
@@ -59,6 +58,7 @@ class ProductModel extends Model
         if($limit > 1){
             return $query->paginate($limit);
         }
+        
     }
     
     public function getAllProductsByAdmin($request){

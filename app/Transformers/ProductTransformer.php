@@ -52,7 +52,8 @@ class ProductTransformer extends TransformerAbstract
             'weight_unit'       => $product->weight_unit,
             "ratings"           =>json_decode($product->rates),
             'total_rating'      => $this->totalRating(json_decode($product->rates), true),
-            'varians'           => $this->getVarianTogether($product->varian_product)
+            'varians'           => $this->getVarianTogether($product->varian_product),
+            'category'          => $product->category
         ];
     }
 

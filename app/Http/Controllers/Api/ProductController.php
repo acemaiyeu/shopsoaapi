@@ -22,7 +22,7 @@ class ProductController extends Controller
 
     }
     public function index(Request $request)
-    { 
+    {   
         $products =  $this->product_model->getAllProducts($request);
         return fractal($products, new ProductTransformer())->respond();
     }

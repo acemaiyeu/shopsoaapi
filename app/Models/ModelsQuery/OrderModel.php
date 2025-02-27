@@ -40,6 +40,9 @@ class OrderModel extends Model
         if (!empty($request['user_id'])){
             $query->where('user_id', $request['user_id']);
         }
+        if (!empty($request['user_id'])){
+            $query->where('user_id', $request['user_id']);
+        }
         if (!empty($request['start_time'])){
             $query->where('created_at', '>=', $request['start_time']);
         }
