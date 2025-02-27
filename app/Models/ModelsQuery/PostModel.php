@@ -114,7 +114,7 @@ class PostModel extends Model
                     $comments[$req['index']]->reply_comments[0] = [
                         "username" => $user,
                         "comment" => $req['comment'],
-                        "created_at" => Carbon::parse(Carbon::now())->format('d-m-Y h:i:s')
+                        "created_at" => Carbon::parse(Carbon::now('Asia/Ho_Chi_Minh'))->format('d-m-Y h:i:s')
                     ];
                 }
                 

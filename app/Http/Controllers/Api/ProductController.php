@@ -9,6 +9,7 @@ use App\Transformers\ProductTransformer;
 use App\Transformers\ProductFillterTransformer;
 use App\Transformers\ProductAdminTransformer;
 use App\Models\ModelsQuery\ProductModel;
+use Carbon\Carbon;
 
 class ProductController extends Controller
 {
@@ -84,6 +85,7 @@ class ProductController extends Controller
      */
     public function destroy(string $id)
     {
-        //
+        Product::whereNull('deleted_at')->where($id)->update(['deleted_at' => Carbon::now('Asia/Ho_Chi_Minh'), "deleted_by" => auth()->auth()->id]);
+        return response(["data" => ["message" => "Đã xóa thành công!"]],200);
     }
 }

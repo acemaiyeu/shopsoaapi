@@ -119,6 +119,7 @@ Route::group([
     Route::get('/products', [ProductController::class, 'indexByAdmin']);
     Route::get('/product-detail/{id}', [ProductController::class, 'detailAdmin']);
     Route::post('/product', [ProductController::class, 'create']);
+    Route::delete('/product/{id}', [ProductController::class, 'destroy']);
 
     //Product varian
     Route::get('/product-varian/{id}', [ProductVarianController::class, 'getAllByProduct']);
