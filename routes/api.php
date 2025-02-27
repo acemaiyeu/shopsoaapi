@@ -120,9 +120,10 @@ Route::group([
     Route::get('/product-detail/{id}', [ProductController::class, 'detailAdmin']);
     Route::post('/product', [ProductController::class, 'create']);
     Route::delete('/product/{id}', [ProductController::class, 'destroy']);
+    
 
     //Product varian
-    Route::get('/product-varian/{id}', [ProductVarianController::class, 'getAllByProduct']);
+    Route::get('/product-varian/{id}', [ProductVarianController::class, 'getAllByProductVarians']);
     Route::post('/product-varian', [ProductVarianController::class, 'update']);
     Route::get('/profile', [UserController::class, 'profile']);
 

@@ -84,6 +84,9 @@ class ProductModel extends Model
             // dd(explode(",", $cleanString));
             $query->whereIn('brand', explode(",", $cleanString));
         }   
+        if(!empty($request['varian_product'])){
+            $query->where('varian_product', $request['varian_product']);
+        }
        
 
         $limit = $request['limit'] ?? 10;
