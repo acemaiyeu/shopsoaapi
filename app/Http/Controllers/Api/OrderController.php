@@ -101,12 +101,16 @@ class OrderController extends Controller
         return response(["message" => ["status" => $order->status, "status_text" => $order->status_text], 200]);
     }
     public function myOrder(Request $req){
+        
         if (!empty(auth()->user())){
-            $req['user_id'] = auth()->user()->id;
-            $orders = $this->orderModel->getAllOrders($req);
-            return fractal($orders, new OrderTransformer())->respond();
+            $req['user_id'] = auth()->user()->id; 
         }
-        return response(["data" => ["message" => "Không tìm thấy đơn hàng của bạn. Chắc chắn bạn đã đăng nhập?"]],400)  ;
+        if(empty(auth()->user()) && empty($req['code'])){
+            return response(["data" => ["data" => []]],200);
+        }
+
+        $orders = $this->orderModel->getAllOrders($req);
+        return fractal($orders, new OrderTransformer())->respond();
     }   
     public function ratingOrder(Request $req){
         if (!empty(auth()->user())){
