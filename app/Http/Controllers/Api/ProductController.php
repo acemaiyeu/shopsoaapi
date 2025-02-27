@@ -45,9 +45,9 @@ class ProductController extends Controller
         return fractal($product, new ProductTransformer())->respond();
     }   
     public function detailAdmin(Request $request, $id)
-    {   $request['limit'] =1;
+    {   $request['limit'] = 1;
         $request['id'] = $id;
-        $product = $this->product_model->getAllProducts($request);
+        $product = $this->product_model->getAllProductsByAdmin($request);
         return fractal($product, new ProductAdminTransformer())->respond();
     }   
     public function create(Request $request)
