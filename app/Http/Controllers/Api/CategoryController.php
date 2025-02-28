@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\ModelsQuery\CategoryModel;
 use App\Transformers\CategoryTransformer;
+use Carbon\Carbon;
 
 use Illuminate\Support\Facades\Http;
 class CategoryController extends Controller
@@ -20,20 +21,24 @@ class CategoryController extends Controller
     
 
     public function getAllCategoryForAdmin(Request $req){
-        $req['limit'] = 1;
-       $warranty =  $this->categoryModel->getWarrantyByCode($req);
+       $warranty =  $this->categoryModel->getAllCategory($req);
        return fractal($warranty, new CategoryTransformer())->respond();
     }
-    public function getDetailCategoryForAdmin(Request $req, $warehouse_id, $order_id){
-        $req['warehouse_id'] = $warehouse_id;
-        $req['order_id'] = $order_id;
+    public function getDetailCategoryForAdmin(Request $req, $code){
         $req['limit']  = 1;
-        $warranty =  $this->categoryModel->getWarrantyByCode($req);
-        return fractal($warranty, new CategoryTransformer())->respond();
+        $req['code'] = $code;
+        $category =  $this->categoryModel->getAllCategory($req);
+        return fractal($category, new CategoryTransformer())->respond();
     }
-    public function deleteById(Request $req){
-        $req['limit'] = 1;
-    $warranty =  $this->categoryModel->getWarrantyByCode($req);
-        return fractal($warranty, new CategoryTransformer())->respond();
+    public function saveCategory(Request $req){
+        $category =  $this->categoryModel->saveCategory($req);
+        return $category;
+        return fractal($category, new CategoryTransformer())->respond();
+    }
+
+    
+    public function deleteByCode(Request $req){
+        Category::whereNull('deleted_at')->where('code', $req['code'])->update(['deleted_at' => Carbon::now('Asia/Ho_Chi_Minh'), "deleted_by" => auth()->user()->id]);
+        return response(["data" => ["message" => "Đã xóa thành công!"]],200);
     }
 }

@@ -172,7 +172,8 @@ Route::group([
     //Category
     Route::middleware(['permission:VIEW-ALL-CATEGORYS'])->get('/categories', [CategoryController::class, 'getAllCategoryForAdmin']);
     Route::middleware(['permission:VIEW-DETAIL-CATEGORY'])->get('/category/{id}', [CategoryController::class, 'getDetailCategoryForAdmin']);
-    Route::middleware(['permission:DELETE-CATEGORY'])->delete('/category/{id}', [CategoryController::class, 'deleteById']);
+    Route::middleware(['permission:DELETE-CATEGORY'])->delete('/category/{id}', [CategoryController::class, 'deleteByCode']);
+    Route::middleware(['permission:CREATE-UPDATE-CATEGORY'])->post('/category', [CategoryController::class, 'saveCategory']);
 
 
     //

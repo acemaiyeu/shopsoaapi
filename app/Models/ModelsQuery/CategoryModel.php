@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Carbon\Carbon;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class CategoryModel extends Model
 {
@@ -39,19 +40,22 @@ class CategoryModel extends Model
     public function saveCategory($req){
         try {
             DB::beginTransaction();
-            
-            $category = new Post();
-            if (!empty($req['code'])){
-                $category  = Post::whereNull('deleted_at')->find($req['code']);
-                $category->updated_at = auth()->user()->id;
-            }
+                $category  = Category::whereNull('deleted_at')->where('code',$req['code'])->first();
+                if (empty($category)){
+                    $category = new Category();
+                    $category->code = $req['code'];
+                }
+                if (empty($category->created_by)){
+                    
+                    $category->created_by = auth()->user()->id;
+                }
             $category->name = $req['name']??$post->name;
-            $caregory->save();
+            $category->save();
             DB::commit();
-            return $post;
+            return $category;
         } catch (\Exception $e) {
             DB::rollBack();
-            return $e;
+            return response(["message" => $e]);
         }
     }
     public function deleteById($id){

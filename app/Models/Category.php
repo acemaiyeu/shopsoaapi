@@ -25,6 +25,6 @@ class Category extends Model
         return $this->hasMany(Product::class, 'category_code', 'code');
     }
     public function createdBy(){
-        return $this->hasOne(User::class, 'id', 'created_by');
+        return $this->hasOne(User::class, 'id', 'created_by')->select('id','username');
     }
 }
