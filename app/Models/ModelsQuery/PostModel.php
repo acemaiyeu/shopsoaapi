@@ -102,16 +102,19 @@ class PostModel extends Model
                 $post  = Post::whereNull('deleted_at')->find($req['id']);
     
                 $comments = json_decode($post->comments)??[];
+                $comments = collect($comments)->sortByDesc('created_at')->values()->all();
+
                 $user = !empty(auth()->user())?auth()->user()->username:"Không đăng nhập";  
-                if (!empty($comments[$req['index']]->reply_comments)){
-                    $comments[$req['index']]->reply_comments[count($comments[$req['index']]->reply_comments)] = [
+                if (!empty($comments[$req['key']]->reply_comments)){
+                    $comments[$req['key']]->reply_comments[count($comments[$req['key']]->reply_comments)] = [
                         "username" => $user,
                         "comment" => $req['comment'],
                         "created_at" => Carbon::parse(Carbon::now('Asia/Ho_Chi_Minh'))->format('d-m-Y H:i:s')
                     ];
                 }
-                if (empty($comments[$req['index']]->reply_comments)){
-                    $comments[$req['index']]->reply_comments[0] = [
+               
+                if (empty($comments[$req['key']]->reply_comments)){
+                    $comments[$req['key']]->reply_comments[0] = [
                         "username" => $user,
                         "comment" => $req['comment'],
                         "created_at" => Carbon::parse(Carbon::now('Asia/Ho_Chi_Minh'))->format('d-m-Y h:i:s')
