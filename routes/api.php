@@ -106,93 +106,93 @@ Route::group([
     'middleware' => 'api.admin'
 ], function($router){
     //Promotion
-    Route::get('/promotions', [PromotionController::class, 'getPromotions']);
-    Route::get('/promotion-products', [PromotionController::class, 'getProductPromotions']);
-    Route::get('/promotion/{id}', [PromotionController::class, 'getDetail']);
-    Route::post('/promotion', [PromotionController::class, 'create']);
-    Route::delete('/promotion/deleted/{id}', [PromotionController::class, 'deleteById']);
+    Route::middleware(['permission:VIEW-ALL-PROMOTIONS'])->get('/promotions', [PromotionController::class, 'getPromotions']);
+    Route::middleware(['permission:CREATE-UPDATE-PROMOTION'])->get('/promotion-products', [PromotionController::class, 'getProductPromotions']);
+    Route::middleware(['permission:VIEW-DETAIL-PROMOTION'])->get('/promotion/{id}', [PromotionController::class, 'getDetail']);
+    Route::middleware(['permission:CREATE-UPDATE-PROMOTION'])->post('/promotion', [PromotionController::class, 'create']);
+    Route::middleware(['permission:DELETE-PROMOTION'])->delete('/promotion/deleted/{id}', [PromotionController::class, 'deleteById']);
 
-    Route::get('/statistics-orders', [OrderController::class, 'statisticsOrders']);
-    Route::get('/orders', [OrderController::class, 'getAllOrders']);
+    Route::middleware(['permission:STATISTIC-ORDERS'])->get('/statistics-orders', [OrderController::class, 'statisticsOrders']);
+    Route::middleware(['permission:VIEW-ALL-ORDERS'])->get('/orders', [OrderController::class, 'getAllOrders']);
 
     //product
-    Route::get('/products', [ProductController::class, 'indexByAdmin']);
-    Route::get('/product-detail/{id}', [ProductController::class, 'detailAdmin']);
-    Route::post('/product', [ProductController::class, 'create']);
-    Route::delete('/product/{id}', [ProductController::class, 'destroy']);
+    Route::middleware(['permission:VIEW-ALL-PRODUCTS'])->get('/products', [ProductController::class, 'indexByAdmin']);
+    Route::middleware(['permission:VIEW-DETAIL-PRODUCT'])->get('/product-detail/{id}', [ProductController::class, 'detailAdmin']);
+    Route::middleware(['permission:CREATE-UPDATE-PRODUCT'])->post('/product', [ProductController::class, 'create']);
+    Route::middleware(['permission:DELETE-PRODUCT'])->delete('/product/{id}', [ProductController::class, 'destroy']);
     
 
     //Product varian
-    Route::get('/product-varian/{id}', [ProductVarianController::class, 'getAllByProductVarians']);
-    Route::post('/product-varian', [ProductVarianController::class, 'update']);
+    Route::middleware(['permission:VIEW-ALL-PRODUCT-VARIAN'])->get('/product-varian/{id}', [ProductVarianController::class, 'getAllByProductVarians']);
+    // Route::middleware(['permission:CREATE-UPDATE-PRODUCT-VARIAN'])->post('/product-varian', [ProductVarianController::class, 'update']);
     Route::get('/profile', [UserController::class, 'profile']);
 
     //Order
-    Route::get('/order-detail/{id}', [OrderController::class, 'detailAdmin']);
-    Route::put('/order-update', [OrderController::class, 'updateOrder']);
-    Route::get('/order-status/{id}', [OrderController::class, 'getStatus']);
+    Route::middleware(['permission:VIEW-DETAIL-ORDER'])->get('/order-detail/{id}', [OrderController::class, 'detailAdmin']);
+    Route::middleware(['permission:UPDATE-DETAIL-ORDER'])->put('/order-update', [OrderController::class, 'updateOrder']);
+    Route::middleware(['permission:VIEW-STATUS-ORDER'])->get('/order-status/{id}', [OrderController::class, 'getStatus']);
 
     //Rating order
     
   
     //Coupon (promocode)
-    Route::get('/promocodes', [PromoCodeController::class, 'getPromoCode']);
-    Route::get('/promo-detail/{id}', [PromoCodeController::class, 'detail']);
-    Route::put('/promo-update', [PromoCodeController::class, 'update']);
-    Route::post('/coupon', [PromoCodeController::class, 'create']);
-    Route::delete('/coupon/{id}', [PromoCodeController::class, 'deleteById']);
+    Route::middleware(['permission:VIEW-ALL-COUPONS'])->get('/promocodes', [PromoCodeController::class, 'getPromoCode']);
+    Route::middleware(['permission:VIEW-DETAIL-COUPON'])->get('/promo-detail/{id}', [PromoCodeController::class, 'detail']);
+    Route::middleware(['permission:UPDATE-DETAIL-COUPON'])->put('/promo-update', [PromoCodeController::class, 'update']);
+    Route::middleware(['permission:CREATE-DETAIL-COUPON'])->post('/coupon', [PromoCodeController::class, 'create']);
+    Route::middleware(['permission:DELETE-COUPON'])->delete('/coupon/{id}', [PromoCodeController::class, 'deleteById']);
 
     //Warehouse
-    Route::get('/warehouses', [WarehouseController::class, 'getAllWarehouse']);
-    Route::get('/warehouse-detail/{id}', [WarehouseController::class, 'getWarehouseDetail']);
-    Route::get('/warehouse-detail-by-warehouse-id/{id}', [WarehouseController::class, 'getWarehouseDetail']);
-    Route::get('/warehouse-product-detail/{id}', [WarehouseController::class, 'getWarehouseProductDetail']);
-    Route::get('/warehouse-product-detail-by-warehouse-id/{warehouse_id}', [WarehouseController::class, 'getWarehouseProductDetailByWarehouse']);
-    Route::post('/warehouse-product-detail', [WarehouseController::class, 'saveWarehouseProductDetail']);
+    Route::middleware(['permission:VIEW-ALL-WAREHOUSE'])->get('/warehouses', [WarehouseController::class, 'getAllWarehouse']);
+    Route::middleware(['permission:VIEW-DETAIL-WAREHOUSE'])->get('/warehouse-detail/{id}', [WarehouseController::class, 'getWarehouseDetail']);
+    Route::middleware(['permission:VIEW-DETAIL-WAREHOUSE'])->get('/warehouse-detail-by-warehouse-id/{id}', [WarehouseController::class, 'getWarehouseDetail']);
+    Route::middleware(['permission:VIEW-PRODUCT-ALL-WAREHOUSE'])->get('/warehouse-product-detail/{id}', [WarehouseController::class, 'getWarehouseProductDetail']);
+    Route::middleware(['permission:VIEW-PRODUCT-ALL-WAREHOUSE'])->get('/warehouse-product-detail-by-warehouse-id/{warehouse_id}', [WarehouseController::class, 'getWarehouseProductDetailByWarehouse']);
+    Route::middleware(['permission:CREATE-UPDATE-PRODUCT-ALL-WAREHOUSE'])->post('/warehouse-product-detail', [WarehouseController::class, 'saveWarehouseProductDetail']);
 
 
-    Route::post('/warehouse', [WarehouseController::class, 'saveWarehouse']);
+    Route::middleware(['permission:CREATE-UPDATE-WAREHOUSE'])->post('/warehouse', [WarehouseController::class, 'saveWarehouse']);
 
 
 
 
     //Warranty
-    Route::get('/warranty/{warhouse_id}/{order_id}', [WarrantyController::class, 'getWarrantyByWarhouseAndOrder']);
-    Route::post('/order-warranty', [WarrantyController::class, 'updateOrderWarranty']);
-    Route::post('/warranty-detail', [WarrantyController::class, 'updateWarrantyDetail']);
+    Route::middleware(['permission:VIEW-DETAIL-WARRANTY'])->get('/warranty/{warhouse_id}/{order_id}', [WarrantyController::class, 'getWarrantyByWarhouseAndOrder']);
+    Route::middleware(['permission:CREATE-UPDATE-WARRANTY'])->post('/order-warranty', [WarrantyController::class, 'updateOrderWarranty']);
+    Route::middleware(['permission:CREATE-UPDATE-WARRANTY'])->post('/warranty-detail', [WarrantyController::class, 'updateWarrantyDetail']);
     
 
     //Post
-    Route::get('/posts', [PostController::class, 'getAllPostForAdmin']);
-    Route::get('/post/{id}', [PostController::class, 'getDetailPostForAdmin']);
-    Route::post('/post', [PostController::class, 'savePost']);
-    Route::delete('/post/{id}', [PostController::class, 'deleteById']);
+    Route::middleware(['permission:VIEW-ALL-POSTS'])->get('/posts', [PostController::class, 'getAllPostForAdmin']);
+    Route::middleware(['permission:VIEW-DETAIL-POST'])->get('/post/{id}', [PostController::class, 'getDetailPostForAdmin']);
+    Route::middleware(['permission:CREATE-UPDATE-POST'])->post('/post', [PostController::class, 'savePost']);
+    Route::middleware(['permission:DELETE-POST'])->delete('/post/{id}', [PostController::class, 'deleteById']);
 
 
     //Category
-    Route::get('/categories', [CategoryController::class, 'getAllCategoryForAdmin']);
-    Route::get('/category/{id}', [CategoryController::class, 'getDetailCategoryForAdmin']);
-    Route::delete('/category/{id}', [CategoryController::class, 'deleteById']);
+    Route::middleware(['permission:VIEW-ALL-CATEGORYS'])->get('/categories', [CategoryController::class, 'getAllCategoryForAdmin']);
+    Route::middleware(['permission:VIEW-DETAIL-CATEGORY'])->get('/category/{id}', [CategoryController::class, 'getDetailCategoryForAdmin']);
+    Route::middleware(['permission:DELETE-CATEGORY'])->delete('/category/{id}', [CategoryController::class, 'deleteById']);
 
 
     //
     //Permision
     
-    Route::middleware(['permission:VIEW-ALL-ORDER'])->get('/permissions', [PermissionController::class, 'getPermission']);
-    Route::post('/permission', [PermissionController::class, 'savePermission']);
-    Route::post('/permission-detail', [PermissionController::class, 'savePermissionDetail']);
-    Route::get('/users-permission', [PermissionController::class, 'getUserPermission']);
-    Route::get('/roles', [PermissionController::class, 'getAllRole']);
+    Route::middleware(['permission:VIEW-ALL-PERMISSION'])->get('/permissions', [PermissionController::class, 'getPermission']);
+    Route::middleware(['permission:CREATE-UPDATE-PERMISSION'])->post('/permission', [PermissionController::class, 'savePermission']);
+    Route::middleware(['permission:CREATE-UPDATE-USER-PERMISSION'])->post('/permission-detail', [PermissionController::class, 'savePermissionDetail']);
+    Route::middleware(['permission:VIEW-USER-PERMISSION'])->get('/users-permission', [PermissionController::class, 'getUserPermission']);
+    Route::middleware(['permission:VIEW-ALL-ROLES'])->get('/roles', [PermissionController::class, 'getAllRole']);
     
     
     //Role
-    Route::post('/role', [RoleController::class, 'saveRole']);
-    Route::delete('/role/{code}', [RoleController::class, 'deleteByCode']);
+    Route::middleware(['permission:CREATE-UPDATE-ROLE'])->post('/role', [RoleController::class, 'saveRole']);
+    Route::middleware(['permission:DELETE-ROLE'])->delete('/role/{code}', [RoleController::class, 'deleteByCode']);
     
 
 
     // User
-    Route::post('/user/changepassword', [UserController::class, 'changePassword']);
+    Route::middleware(['permission:CHANGE-USER-PASSWORD'])->post('/user/changepassword', [UserController::class, 'changePassword']);
 
     
 });
