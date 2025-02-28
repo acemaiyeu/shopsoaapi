@@ -194,7 +194,7 @@ Route::group([
 
     // User
     Route::middleware(['permission:CHANGE-USER-PASSWORD'])->post('/user/changepassword', [UserController::class, 'changePassword']);
-
+    Route::middleware(['permission:CREATE-USER'])->post('/user-admin', [UserController::class, 'createUserByAdmin']);
     
 });
 // Route::group(['prefix' => 'v0'])->get('/products', [ProductController::class, 'index']);

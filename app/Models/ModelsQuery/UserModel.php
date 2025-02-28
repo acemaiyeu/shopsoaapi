@@ -51,4 +51,32 @@ class UserModel extends Model
         return ["data" => ["message" => $e]];
     }
    }
+   public function createUserByAdmin($req){
+    try{
+        DB::beginTransaction();
+            $user = User::whereNull('deleted_at')->where('email', $req['email'])->exists();
+            if(!empty($user)){
+                return ['message' => "Tài khoản(email) đã tồn tại!"];
+            }
+            if (empty($req['username'])){
+                return ['message' => "Vui lòng nhập Tên tài khoản!"];
+            }
+            if (strlen($req['password']) < 5){
+                return ['message' => "Mật khẩu phải từ 5 kí tự trở lên!"];
+            }
+            $user = new User();
+            $user->username = $req['username'];
+            $user->password = Hash::make($req['password']);
+            $user->role_code = $req['role_code'];
+            $user->save();
+            
+        DB::commit();
+        return $user;
+    }catch(\Exception $e) {
+        DB::rollBack();
+    //   dd($e);
+        return ["data" => ["message" => $e]];
+    }
+   }
+   
 }

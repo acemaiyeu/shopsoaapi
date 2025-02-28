@@ -236,9 +236,16 @@ public function listFiles(Request $req)
     public function changePassword(Request $request){
         $user = $this->userModel->changePassword($request);
         if (is_array($user)){
+            return response(["message" => $user['message']],400);
+        }
+        return response(["message" => "Đổi mật khẩu thành công!"],200);
+    }
+    public function createUserByAdmin(Request $request){
+        $user = $this->userModel->createUserByAdmin($request);
+        if (is_array($user)){
             return response(["data" => ["message" => $user['message']]],400);
         }
-        return response(["data" => ["message" => "Đổi mật khẩu thành công!"]],200);
+        return response(["message" => "Tạo tài khoản thành công!"],200);
     }
     
     public function uploadToTeraBox(Request $request)
