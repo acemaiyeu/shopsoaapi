@@ -11,6 +11,8 @@ use App\Transformers\PermissionTransformer;
 use App\Transformers\UserPermissionTransformer;
 use App\Transformers\RoleTransformer;
 use App\Models\ModelsQuery\RoleModel;
+use App\Models\PermissionDetail;
+use Carbon\Carbon;
 class PermissionController extends Controller
 {
     /**
@@ -29,9 +31,9 @@ class PermissionController extends Controller
     public function savePermissionDetail(Request $req){
         $permission = $this->permissionModel->savePermissionUser($req);
         if (is_array($permission)){
-            return response(["data" => ["message" => $permission['message']]]);
+            return response(["message" => $permission['message']]);
         }
-        return fractal($permission, new PermissionTransformer())->respond();
+        return response(["message" => "Đã lưu thành công!"]);
     }
     public function savePermission(Request $req){
         // dd($req->all());
@@ -50,5 +52,10 @@ class PermissionController extends Controller
         $users = $this->roleModel->getAllRole($req);
         return fractal($users, new RoleTransformer())->respond();
     }
+    public function deletePermissionDetailById($id){
+        PermissionDetail::whereNull('deleted_at')->update(['deleted_at' => Carbon::now('Asia/Ho_Chi_Minh'), "deleted_by" => auth()->user()->id]);
+        return response(["data" => ["message" => "Đã xóa thành công!"]],200);
+    }
+    
     
 }

@@ -42,13 +42,13 @@ class OrderController extends Controller
         $day1 = $date->format('Y-m-d');
         $total_price_1 = Order::whereNull('deleted_at')->where('created_at','like', "%" . $day1 . "%")->sum('total_price');
 
-        $data = [$day7 => $total_price_7,
-                $day6 => $total_price_6,
-                $day5 => $total_price_5,
-                $day4 => $total_price_4,
-                $day3 => $total_price_3,
-                $day2 => $total_price_2,
-                $day1 => $total_price_1];
+        $data = [["date" => $day7, "amount" => $total_price_7],
+        ["date" => $day6,"amount" => $total_price_6],
+        ["date" => $day5,"amount" => $total_price_5],
+        ["date" => $day4,"amount" => $total_price_4],
+        ["date" => $day3,"amount" => $total_price_3],
+        ["date" => $day2,"amount" => $total_price_2],
+        ["date" => $day1,"amount" => $total_price_1]];
         return $data;
     }
     public function getAllOrders(Request $request){

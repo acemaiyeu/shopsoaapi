@@ -35,7 +35,7 @@ class PermissionModel extends Model
         }
         $query->with('createdBy');   
         $query->with('details');        
-        $limit = $request['limit'] ?? 10;
+        $limit = $request['limit'] ?? 10000;
         
         if($limit == 1){
             return $query->first();
@@ -94,30 +94,15 @@ class PermissionModel extends Model
         try {
             DB::beginTransaction();
             
-            $permission = new Permission();
-            if (!empty($req['id'])){
-                $permission  = Permission::whereNull('deleted_at')->find($req['id']);
-                $post->updated_at = auth()->user()->id;
+            $permission = new PermissionDetail();
+            $check = PermissionDetail::whereNull("deleted_at")->where('user_id', $req['user_id'])->where('permission_id', $req['permission_id'])->exists();
+            if ($check){
+                return ["message" => "Tài khoản đã có quyền này!"];
             }
-            $permission->code = $req['code']??$permission->code;
-            $permission->name = $req['name']??$permission->name;
-            if(empty($permission->id)){
-                $permission->created_by = auth()->user()->id;
-            }
+            $permission->user_id = $req['user_id'];
+            $permission->permission_id = $req['permission_id'];
+            $permission->created_by = auth()->user()->id;
             $permission->save();
-
-            foreach($req['details'] as $detail){
-                $permission_detail = new PermissionDetail();
-                if (!empty($detail['id'])){
-                    $permission_detail = PermissionDetail::whereNull('deleted_at')->find($detail['id']);
-                }else{
-                    $permission_detail->created_by = auth()->user()->id;
-                }
-                $permission_detail->user_id = $detail['user_id'];
-                $permission_detail->permission_id = $permission->id;
-                $permission_detail->active = $detail['active']??0;
-                $permission_detail->save();
-            }
             DB::commit();
             return $permission;
         } catch (\Exception $e) {

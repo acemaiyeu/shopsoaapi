@@ -184,6 +184,7 @@ Route::group([
     Route::middleware(['permission:CREATE-UPDATE-USER-PERMISSION'])->post('/permission-detail', [PermissionController::class, 'savePermissionDetail']);
     Route::middleware(['permission:VIEW-USER-PERMISSION'])->get('/users-permission', [PermissionController::class, 'getUserPermission']);
     Route::middleware(['permission:VIEW-ALL-ROLES'])->get('/roles', [PermissionController::class, 'getAllRole']);
+    Route::middleware(['permission:DELETE-PERMISSION-USER'])->delete('/permission-detail/{id}', [PermissionController::class, 'deletePermissionDetailById']);
     
     
     //Role
