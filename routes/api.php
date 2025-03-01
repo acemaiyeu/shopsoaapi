@@ -113,6 +113,7 @@ Route::group([
     Route::middleware(['permission:DELETE-PROMOTION'])->delete('/promotion/deleted/{id}', [PromotionController::class, 'deleteById']);
 
     Route::middleware(['permission:STATISTIC-ORDERS'])->get('/statistics-orders', [OrderController::class, 'statisticsOrders']);
+    Route::middleware(['permission:STATISTIC-ORDERS'])->get('/statistics-orders-report', [OrderController::class, 'statisticsOrdersReport']);
     Route::middleware(['permission:VIEW-ALL-ORDERS'])->get('/orders', [OrderController::class, 'getAllOrders']);
 
     //product
