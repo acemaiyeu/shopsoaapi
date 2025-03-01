@@ -71,8 +71,9 @@ class PromotionController extends Controller
             foreach($gifts_promotion as $gift){
                 if ($gift->type == "DISCOUNT_PRICE"){
                     foreach($gift->gifts as $item){
-                            $product = Product::whereNull('deleted_at')->where('code', $item->product_code)->select('id','price','name','rates')->first();
+                            $product = Product::whereNull('deleted_at')->where('code', $item->product_code)->select('id','price','name','images','rates')->first();
                             if (!empty($product)){
+                                $product->images = json_decode($product->images);
                                 // $product[] = $product;
                                 $discount = 0;
                                 if ($item->type_discount == "price"){
