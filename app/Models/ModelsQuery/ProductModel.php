@@ -112,7 +112,7 @@ class ProductModel extends Model
         
     }
     public function createProduct($req){
-        // try {
+        try {
             DB::beginTransaction();
             if (!empty($req['id'])){
                 $product = Product::whereNull('deleted_at')->find($req['id']);
@@ -132,15 +132,15 @@ class ProductModel extends Model
             $product->infomation_long = $req['infomation_long']??$product->infomation_long;
             $product->category_code = $req['category_code']??$product->category_code;
             $product->category_name = $req['category_name']??$product->category_name;
-            $product->varians = !empty($req['varians'])?json_encode($req['varians']):$product->varian_product;
+            $product->varians = !empty($req['varians'])?json_encode($req['varians']):null;
             $product->varian_product = $req['varian_product']??$product->varian_product;
             $product->save();
             
-    //         DB::commit();
+            DB::commit();
             return $product;
-    // } catch (\Exception $e) {
-    //     DB::rollBack();
-    //     throw $e;
-    // }
+    } catch (\Exception $e) {
+        DB::rollBack();
+        throw $e;
+    }
     }
 }
