@@ -12,7 +12,7 @@ class CartTransformer extends TransformerAbstract
     public function transform(Cart $cart)
     {
         foreach($cart->details as $key => $detail){
-            $product = $detail->poduct;
+            $product = $detail->product;
             $product->images = !empty($product->images)?json_decode($product->images,1):[];  
             $cart->details[$key]->product = $product;
         }
