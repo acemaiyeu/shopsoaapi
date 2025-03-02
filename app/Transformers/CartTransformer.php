@@ -11,6 +11,11 @@ class CartTransformer extends TransformerAbstract
     
     public function transform(Cart $cart)
     {
+        foreach($cart->details as $key => $detail){
+            $product = $detail->poduct;
+            $product->images = !empty($product->images)?json_decode($product->images,1):[];  
+            $cart->details[$key]->product = $product;
+        }
         return [
             'id' => $cart->id,
             'user_id' => $cart->user_id,
