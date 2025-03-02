@@ -37,7 +37,9 @@ class CartDetail extends Model
         return $this->belongsTo(Cart::class);
     }
     public function product(){
-        return $this->belongsTo(Product::class)->select('id','code','name','price','price_text','images','brand','weight','weight_unit');//'infomation_short','infomation_long');
+        $product = $this->belongsTo(Product::class)->select('id','code','name','price','price_text','images','brand','weight','weight_unit');//'infomation_short','infomation_long');
+        $product->images = !empty($product->images)?json_decode($product->images):[];
+        return $product;
     }
     public function productShort(){
         return $this->belongsTo(Product::class)->select('id','code','name','price','price_text');
