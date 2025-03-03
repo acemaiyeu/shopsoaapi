@@ -24,4 +24,7 @@ class ProductFillter extends Model
     public function getFillters(){
         return $this->hasMany(Fillter::class, 'product_fillter_type', 'type');
     }
+    public function createdBy(){
+        return $this->hasOne(User::class, 'id', 'created_by');
+    }
 }

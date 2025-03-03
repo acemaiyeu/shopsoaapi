@@ -18,6 +18,7 @@ use App\Http\Controllers\Api\PermissionController;
 use App\Http\Controllers\Api\RoleController;
 use App\Http\Controllers\Api\ImgurController;
 use App\Http\Controllers\Api\ImageProxyController;
+use App\Http\Controllers\Api\ProductFillterController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -198,6 +199,12 @@ Route::group([
     Route::middleware(['permission:CHANGE-USER-PASSWORD'])->post('/user/changepassword', [UserController::class, 'changePassword']);
     Route::middleware(['permission:CREATE-USER'])->post('/user-admin', [UserController::class, 'createUserByAdmin']);
     
+
+    // FIllter
+    Route::middleware(['permission:GET-ALL-FILLTER'])->get('/fillters', [ProductFillterController::class, 'getAllFillter']);
+    Route::middleware(['permission:GET-DETAIL-FILLTER'])->get('/fillter/{id}', [ProductFillterController::class, 'getDetailFillter']);
+    Route::middleware(['permission:CREATE-UPDATE-FILLTER'])->post('/fillter', [ProductFillterController::class, 'saveFillter']);
+    Route::middleware(['permission:DELETE-FILLTER'])->delete('/fillter/{id}', [ProductFillterController::class, 'deleteFillter']);
 });
 // Route::group(['prefix' => 'v0'])->get('/products', [ProductController::class, 'index']);
 
