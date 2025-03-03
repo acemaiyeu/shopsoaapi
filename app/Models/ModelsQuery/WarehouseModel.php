@@ -222,7 +222,7 @@ class WarehouseModel extends Model
                 $warehouse = new Warehouse();
                 if (!empty($req['id'])){
                     $warehouse = Warehouse::whereNull('deleted_at')->find($req['id']);
-                }  
+                }
                 $warehouse->code = $req['code']??$warehouse->code;
                 $warehouse->name = $req['name']??$warehouse->name;
                 $warehouse->address = $req['address']??$warehouse->address;

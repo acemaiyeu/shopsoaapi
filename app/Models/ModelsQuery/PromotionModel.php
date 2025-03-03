@@ -33,6 +33,34 @@ class PromotionModel extends Model
         if (!empty($request['show_web'])){
             $query->where('show_web', $request['show_web']);
         }
+        if (!empty($request['code'])){
+            $query->where('promotion_code', $request['code']);
+        }
+        if (!empty($request['name'])){
+            $query->where('promotion_name', 'like', "%" . $request['name'] . "%");
+        }
+        if (!empty($request['start_time'])){
+            $query->where('start_time', '>=', $request['start_time']);
+        }
+        if (!empty($request['end_time'])){
+            $query->where('end_time', '<=', $request['end_time']);
+        }
+        if (!empty($request['status'])){
+            if ($request['status'] == "ON"){
+                $request['status'] = 1;
+            }  
+            if ($request['status'] == "OFF"){
+                $request['status'] = 0;
+            }   
+            if ($request['status'] == 0 || $request['status'] == 1){
+                $query->where('status',$request['status']);
+            } 
+        }
+        if (!empty($request['created_by'])){
+            $query->whereHas('createdBy', function($query) use($request){
+                $query->where('username', 'like', "%" . $request['created_by'] . "%");
+            });
+        }
         $limit = $request['limit'] ?? 10;
         if ($limit == 1){
             return $query->first();
