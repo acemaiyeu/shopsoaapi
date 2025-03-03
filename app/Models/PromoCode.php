@@ -26,4 +26,7 @@ class PromoCode extends Model
         'deleted_by'
     ];
     
+    public function createdBy(){
+        return $this->hasOne(User::class, 'id', 'created_by')->select('id','username');
+    }
 }

@@ -16,22 +16,34 @@ class PromoCodeModel extends Model
     public function getPromoCode($request){
         $query =  PromoCode::query();
         $query->whereNull('deleted_at')->whereNull('deleted_by');
-        if (!empty($request['start_date'])){
-            $query->where('start_date','<=', $request['start_date']);
+        if (!empty($request['start_time'])){
+            $query->where('start_date','>=', $request['start_time']);
         }
-        if (!empty($request['end_date'])){
-            $query->where('end_date','>=',$request['end_date']);
+        if (!empty($request['end_time'])){
+            $query->where('end_date','<=',$request['end_time']);
         }
         if (!empty($request['code'])){
-            $query->where('end_date','>=',Carbon::now());
+            $query->where('code', $request['code']);
         }
         if (!empty($request['name'])){
             $query->where('name','like', "%" . $request['name'] . "%");
         }
         if (!empty($request['status'])){
-            $query->where('status', $request['status']);
+            if ($request['status'] == "ON"){
+                $request['status'] = 1;
+            }  
+            if ($request['status'] == "OFF"){
+                $request['status'] = 0;
+            }   
+            if ($request['status'] == 0 || $request['status'] == 1){
+                $query->where('status',$request['status']);
+            } 
         }
-
+        if (!empty($request['created_by'])){
+            $query->whereHas('createdBy', function($query) use($request){
+                $query->where('username', 'like', "%" . $request['created_by'] . "%");
+            });
+        }
         
             return $query->get();
     }

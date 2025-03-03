@@ -19,13 +19,26 @@ class PostModel extends Model
         if (!empty($request['name'])){
             $query->where('name', 'like', "%" . $request['name'] . "%");
         }
+        if (!empty($request['code'])){
+            $query->where('code',  $request['code']);
+        }
         if (!empty($request['id'])){
             $query->where('id', $request['id']);
         }
-        if (!empty($request['createdby'])){
+        if (!empty($request['created_by'])){
             $query->whereHas('createdBy', function($query) use($request){
-                $query->where('name', 'like', "%". $request['createdby'] . "%");
+                $query->where('username', 'like', "%". $request['created_by'] . "%");
             });
+        }
+        if (empty($request['view'])){
+            $query->orderBy('view', 'desc');
+        }
+        if (!empty($request['view'])){
+            if ($request['view'] == "descending"){
+                $query->orderBy('view', 'desc');
+            }else{
+                $query->orderBy('view');
+            }
         }
         $query->with('createdBy');        
         $limit = $request['limit'] ?? 10;
