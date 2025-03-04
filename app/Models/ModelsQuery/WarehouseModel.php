@@ -42,7 +42,11 @@ class WarehouseModel extends Model
                 });
             });
         }
-
+        if (auth()->user()->role_code != "SUPERADMIN"){
+                if (auth()->user()->role_code == "DISTRIBUTOR" || auth()->user()->role_code == "EMPLOYEE"){
+                    $query->where('created_by', auth()->user()->id);
+                }
+        }
         // if (!empty($request['code'])){
         //     $query->where('code',$request['code']);
         // }
@@ -93,6 +97,13 @@ class WarehouseModel extends Model
                     $query->where('code', $request['product'])->orWhere('name', 'like', '%'. $request['product'] . '%');
             });
         }
+        if (auth()->user()->role_code != "SUPERADMIN"){
+            if (auth()->user()->role_code == "DISTRIBUTOR" || auth()->user()->role_code == "EMPLOYEE"){
+                $query->whereHas('warehouse', function($query){
+                    $query->where('created_by', auth()->user()->id);
+                });
+            }
+    }
         // if (!empty($request['code'])){
         //     $query->where('code',$request['code']);
         // }
@@ -159,6 +170,13 @@ class WarehouseModel extends Model
             if (!empty($request['createdby'])){
                 $query->whereHas('create', function($query) use($request){
                     $query->where('username', 'like', "%" . $request['createdby'] . "%");
+                });
+            }
+            if (auth()->user()->role_code == "DISTRIBUTOR" || auth()->user()->role_code == "EMPLOYEE"){
+                $query->whereHas('warehousedetail', function($query){
+                    $query->whereHas('warehouse', function($query){
+                        $query->where('created_by', auth()->user()->id);
+                    });
                 });
             }
         $query->with('warehousedetail');
