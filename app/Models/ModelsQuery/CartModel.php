@@ -284,7 +284,7 @@ class CartModel extends Model
     }
 
     public function priceForDistant($distant, $total_weight){
-        $price = 16000;
+        $price = 13000;
             if ($total_weight > 3){
                 $total_weight -= 3;
 
@@ -292,8 +292,8 @@ class CartModel extends Model
                 for ($i = 1; $i <= $total_weight; $i ++){
                     $price += 2500;
                 }
-              
             }
+            $price += $distant * 20;
             return $price;
     }
 }

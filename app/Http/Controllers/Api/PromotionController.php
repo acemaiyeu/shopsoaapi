@@ -53,9 +53,10 @@ class PromotionController extends Controller
         // return $promotion;
     }
     public function getPromotionsForWeb(Request $req){
+        $date = Carbon::now('Asia/Ho_Chi_Minh')->format('Y-m-d H:i:s');
         $req['show_web'] = 1;
-        $req['start_time'] = Carbon::now();
-        $req['end_time'] = Carbon::now();
+        $req['start_time'] = $date;
+        $req['end_time'] =  $date;
         $req['status'] = 1;
         $promotions = $this->promotion_model->getPromotions($req);
         foreach($promotions as $key => $promotion){

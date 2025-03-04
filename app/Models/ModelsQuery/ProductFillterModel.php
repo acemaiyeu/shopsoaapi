@@ -52,7 +52,7 @@ class ProductFillterModel extends Model
                 $fillter->created_by = auth()->user()->id;
             }
             $fillter->save();
-
+            FIllter::whereNull('deleted_at')->where('product_fillter_type' , $fillter->type)->update(['deleted_at' => Carbon::now()]);
             foreach($req['details'] as $detail){
                     $new_detail = new Fillter();
                     $new_detail->id = $detail->id??null;

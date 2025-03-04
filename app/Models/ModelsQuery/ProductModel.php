@@ -8,6 +8,7 @@ use App\Models\Product;
 use App\Models\ProductFillter;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Str;
 
 class ProductModel extends Model
 {
@@ -103,6 +104,29 @@ class ProductModel extends Model
 
         $query->with('getFillters');
         $limit = $request['limit'] ?? 1;
+        if (!empty($request['type'])){
+            if (Str::contains(Str::lower($request['type']), 'điện thoại') || Str::contains(Str::lower($request['type']), 'smart phone')) {
+                $query->where('type', 'like' , "%". 'điện thoại' ."%");
+            }
+            if (Str::contains(Str::lower($request['type']), 'tivi') || Str::contains(Str::lower($request['type']), 'tv')) {
+                $query->where('type', 'like' , "%". 'tivi' ."%")->orwhere('type', 'like' , "%". 'tv' ."%");
+            }
+            if (Str::contains(Str::lower($request['type']), 'máy giặt') || Str::contains(Str::lower($request['type']), 'gia dụng')) {
+                $query->where('type', 'like' , "%". 'máy giặt' ."%")->orwhere('type', 'like' , "%". 'gia dụng' ."%");
+            }
+            if (Str::contains(Str::lower($request['type']), 'tủ lạnh') || Str::contains(Str::lower($request['type']), 'gia dụng')) {
+                $query->where('type', 'like' , "%". 'tủ lạnh' ."%")->orwhere('type', 'like' , "%". 'gia dụng' ."%");
+            }
+            if (Str::contains(Str::lower($request['type']), 'âm thanh') || Str::contains(Str::lower($request['type']), 'loa')) {
+                $query->where('type', 'like' , "%". 'anh thanh' ."%")->orwhere('type', 'like' , "%". 'âm thanh' ."%")->orwhere('type', 'like' , "%". 'sound' ."%");
+            }
+            if (Str::contains(Str::lower($request['type']), 'default')) {
+                $query->where('type', 'like' , "%". 'anh thanh' ."%")->orwhere('type', 'like' , "%". 'mặc định' ."%")->orwhere('type', 'like' , "%". 'chung' ."%")->orwhere('type', 'like' , "%". 'default' ."%");
+            }   
+            $query->orWhereHas('getFillters', function($query) use($request){
+                $query->where('value', 'like', "%" . $request['type'] . "%");
+            });
+        }
         if($limit == 1){
             return $query->first();
         }

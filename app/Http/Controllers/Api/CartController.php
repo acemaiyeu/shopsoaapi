@@ -63,14 +63,18 @@ class CartController extends Controller
                             }
                             if (!empty($warehouse['data']['warehouses'])){
                                 foreach($warehouse['data']['warehouses'] as $key => $w){
-                                    
-
-                                    $w->price = $this->cartModel->priceForDistant($w->distance, $total_weight); 
+                                    $w->price = $this->cartModel->priceForDistant($w->distance, $total_weight);
                                     $w->price_text = number_format($w->price,0,',','.') . " đ";
-                                    if (empty($cart->warehouse_id) && $key == 0){
+                                    if (empty($cart->warehouse_id)){
                                         $cart->warehouse_id = $w->id;
                                         $cart->fee_ship = $w->price;
+                                        
+                                    }else{
+                                        if($cart->warehouse_id == $w->id){
+                                            $cart->fee_ship = $w->price;  
+                                        }
                                     }
+                                    
                                 }
                                 $cart->warehouses = json_encode($warehouse['data']['warehouses']);
                             }

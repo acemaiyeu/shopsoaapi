@@ -22,7 +22,7 @@ class ProductFillter extends Model
     ];
     
     public function getFillters(){
-        return $this->hasMany(Fillter::class, 'product_fillter_type', 'type');
+        return $this->hasMany(Fillter::class, 'product_fillter_type', 'type')->whereNull('deleted_at');
     }
     public function createdBy(){
         return $this->hasOne(User::class, 'id', 'created_by');

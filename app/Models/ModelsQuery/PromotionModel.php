@@ -40,16 +40,16 @@ class PromotionModel extends Model
             $query->where('promotion_name', 'like', "%" . $request['name'] . "%");
         }
         if (!empty($request['start_time'])){
-            $query->where('start_time', '>=', $request['start_time']);
+            $query->where('start_time', '<=', $request['start_time']);
         }
         if (!empty($request['end_time'])){
-            $query->where('end_time', '<=', $request['end_time']);
+            $query->where('end_time', '>=', $request['end_time']);
         }
         if (!empty($request['status'])){
-            if ($request['status'] == "ON"){
+            if ($request['status'] == "ON" || $request['status'] == 1){
                 $request['status'] = 1;
             }  
-            if ($request['status'] == "OFF"){
+            if ($request['status'] == "OFF" || $request['status'] == 0){
                 $request['status'] = 0;
             }   
             if ($request['status'] == 0 || $request['status'] == 1){
