@@ -8,8 +8,6 @@ use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\User;
 use App\Models\Cart;
-use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\DB;
 
 class UserModel extends Model
 {
@@ -27,56 +25,24 @@ class UserModel extends Model
             return $query->paginate($limit);
         }   
     }
-   public function changePassword($req){
-    try{
-        DB::beginTransaction();
-            $user = User::whereNull('deleted_at')->find($req['id']);
-            if(empty($user)){
-                return ['message' => "Không tìm thấy tài khoản!"];
+    public function updateProfile($req){
+        try {   
+            $user = auth()->user();
+            if ($user){
+                $user->fullname = $req->fullname??$user->fullname;
+                $user->email = $req->email??$user->email;
+                $user->phone = $req->phone??$user->phone;
+                $user->ward_id = $req->ward_id??$user->ward_id;
+                $user->district_id = $req->district_id??$user->district_id;
+                $user->city_id = $req->city_id??$user->city_id;
+                $user->save();
+                return $user;
+            }else{
+                return  ["status" => 404, "message" => "Không tìm thấy người dùng"];
             }
-            if (!Hash::check($req['password_old'], $user->password) && $user->id != auth()->user()->id){
-                return ['message' => "Mật khẩu không đúng với tài khoản!"];
-            }
-            if ($req['password_new'] != $req['password_confirm']){
-                return ['message' => "Mật khẩu lặp lại không trùng với mật khẩu mới!"];
-            }
-            $user->password = Hash::make($req['password_new']);
-            $user->save();
-            
-        DB::commit();
-        return $user;
-    }catch(\Exception $e) {
-        DB::rollBack();
-    //   dd($e);
-        return ["data" => ["message" => $e]];
+        }catch(Exception $e){
+            return  ["status" => 500, "message" => $e];
+        }
     }
-   }
-   public function createUserByAdmin($req){
-    try{
-        DB::beginTransaction();
-            $user = User::whereNull('deleted_at')->where('email', $req['email'])->exists();
-            if(!empty($user)){
-                return ['message' => "Tài khoản(email) đã tồn tại!"];
-            }
-            if (empty($req['username'])){
-                return ['message' => "Vui lòng nhập Tên tài khoản!"];
-            }
-            if (strlen($req['password']) < 5){
-                return ['message' => "Mật khẩu phải từ 5 kí tự trở lên!"];
-            }
-            $user = new User();
-            $user->username = $req['username'];
-            $user->password = Hash::make($req['password']);
-            $user->role_code = $req['role_code'];
-            $user->save();
-            
-        DB::commit();
-        return $user;
-    }catch(\Exception $e) {
-        DB::rollBack();
-    //   dd($e);
-        return ["data" => ["message" => $e]];
-    }
-   }
    
 }

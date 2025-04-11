@@ -4,16 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\CartDetail;
 use App\Models\User;
 
-class Post extends Model
+class Ward extends Model
 {
     use HasFactory;
-    protected $table = 'posts';
+    protected $table = 'wards';
     protected $fillable = [
         'id',
-        'data',
+        'code',
         'name',
         'created_at',
         'created_by',
@@ -22,7 +21,7 @@ class Post extends Model
         'deleted_at',
         'deleted_by'
     ];
-    public function createdBy(){
-        return $this->hasOne(User::class, 'id', 'created_by');
+    public function users(){
+        return $this->hasMany(User::class);
     }
 }

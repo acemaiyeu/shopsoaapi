@@ -10,7 +10,6 @@ use App\Transformers\ProductTransformer;
 use App\Models\ModelsQuery\PromotionModel;
 use App\Models\ModelsQuery\ProductModel;
 use Carbon\Carbon;
-use App\Models\Promotion;
 use App\Models\Product;
 class PromotionController extends Controller
 {
@@ -43,20 +42,10 @@ class PromotionController extends Controller
         return fractal($promotion, new PromotionTransformer())->respond();
         // return $promotion;
     }
-    public function deleteById(Request $req, $id){
-        $promotion =  Promotion::whereNull('deleted_at')->find($id);
-        if (!empty($promotion)){
-            $promotion->deleted_at = Carbon::now();
-            $promotion->save();
-        }
-        return response(["data" => ["message"]],200);
-        // return $promotion;
-    }
     public function getPromotionsForWeb(Request $req){
-        $date = Carbon::now('Asia/Ho_Chi_Minh')->format('Y-m-d H:i:s');
         $req['show_web'] = 1;
-        $req['start_time'] = $date;
-        $req['end_time'] =  $date;
+        $req['start_time'] = Carbon::now();
+        $req['end_time'] = Carbon::now();
         $req['status'] = 1;
         $promotions = $this->promotion_model->getPromotions($req);
         foreach($promotions as $key => $promotion){
@@ -72,9 +61,8 @@ class PromotionController extends Controller
             foreach($gifts_promotion as $gift){
                 if ($gift->type == "DISCOUNT_PRICE"){
                     foreach($gift->gifts as $item){
-                            $product = Product::whereNull('deleted_at')->where('code', $item->product_code)->select('id','price','name','images','rates')->first();
+                            $product = Product::whereNull('deleted_at')->where('code', $item->product_code)->select('id','price','name')->first();
                             if (!empty($product)){
-                                $product->images = json_decode($product->images);
                                 // $product[] = $product;
                                 $discount = 0;
                                 if ($item->type_discount == "price"){

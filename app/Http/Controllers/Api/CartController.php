@@ -7,9 +7,8 @@ use Illuminate\Http\Request;
 use App\Models\ModelsQuery\CartModel;
 use App\Models\ModelsQuery\PromotionModel;
 use App\Transformers\CartTransformer;
-use App\Models\Product;
+use App\Models\Theme;
 use App\Models\Cart;
-use App\Models\Warehouse;
 use App\Models\CartDetail;
 use Illuminate\Support\Facades\Http;
 
@@ -46,41 +45,6 @@ class CartController extends Controller
                     $cart->lat = $data['data']['lat'];
                     $cart->lon = $data['data']['lon'];
                 }
-                if (!empty($cart->details)){
-                    $id_products =  $cart->details->pluck('product_id');
-                    $warehouse = $this->cartModel->getWarehousesNear($cart->lat, $cart->lon, $id_products);
-                    if (!empty($warehouse['data'])){
-                            // dd($warehouse['data']['warehouses']);
-                        // tinh tong so ky trong gio hang
-                            $total_weight = 0;
-                            foreach($cart->details as $detail){
-                                if ($detail->product->weight_unit == "gram" || $detail->product->weight_unit == "g"){
-                                    $total_weight = $total_weight  + ($detail->product->weight / 1000);
-                                }
-                                if ($detail->product->weight_unit == "kg"){
-                                    $total_weight += $detail->product->weight;
-                                }
-                            }
-                            if (!empty($warehouse['data']['warehouses'])){
-                                foreach($warehouse['data']['warehouses'] as $key => $w){
-                                    $w->price = $this->cartModel->priceForDistant($w->distance, $total_weight);
-                                    $w->price_text = number_format($w->price,0,',','.') . " đ";
-                                    if (empty($cart->warehouse_id)){
-                                        $cart->warehouse_id = $w->id;
-                                        $cart->fee_ship = $w->price;
-                                        
-                                    }else{
-                                        if($cart->warehouse_id == $w->id){
-                                            $cart->fee_ship = $w->price;  
-                                        }
-                                    }
-                                    
-                                }
-                                $cart->warehouses = json_encode($warehouse['data']['warehouses']);
-                            }
-                            
-                    }
-                }
                 $cart = $this->promotionModel->getPromotionForCart($cart);
        }
        return fractal($cart, new CartTransformer())->respond();
@@ -88,33 +52,23 @@ class CartController extends Controller
 
     public function addToCart(Request $req){
        
-        $product = Product::find($req['product_id']);
-        $message = "Không tìm thấy sản phẩm";
+        $theme = Theme::whereNull('deleted_at')->find($req['theme_id']);
+        $message = "Không tìm thấy theme";
         $status = 401;
         $cart = null;
-            
-            if (!(Warehouse::whereNull('deleted_at')->whereHas('details', function($query) use($req){
-                $query->where('product_id', $req['product_id']);
-            })->exists())){
-                return response(["message" => "Các chi nhánh đã hết hàng. Mong quý khách thông cảm!"],400);
-            }
         
-        if (!empty($product)){
-           
+        if (!empty($theme)){
             $message = "success";
             $status = 200;
             $cart = $this->cartModel->addToCart($req);
             // $cart = Cart::with('details')->find($cart->id);
-        }
-        if(is_array($cart)){
-            return response(["data" => ["message" => $cart['data']['message']]],400);
         }
         return  fractal($cart, new CartTransformer())->respond(); 
     }   
     public function updateCartInfo(Request $req){
         $cart = $this->cartModel->getCart($req);
         $cart = $this->cartModel->updateCartInfo($req, $cart);
-        return response(["data" => ["messages" => "sessucess"]],200);
+        return  fractal($cart, new CartTransformer())->respond(); 
     }
    
 }

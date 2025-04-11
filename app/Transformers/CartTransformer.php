@@ -11,21 +11,17 @@ class CartTransformer extends TransformerAbstract
     
     public function transform(Cart $cart)
     {
-        foreach($cart->details as $key => $detail){
-            $product = $detail->product;
-            $product->images = !empty($product->images)?json_decode($product->images,1):[];  
-            $cart->details[$key]->product = $product;
-        }
         return [
             'id' => $cart->id,
             'user_id' => $cart->user_id,
-            'username' => $cart->user_name,
-            'phone_number' => $cart->phone_number,
+            'fullname' => $cart->fullname,
+            'user_phone' => $cart->user_phone,
+            'user_email' => $cart->user_email,
             'payment' => $cart->payment,
             'discount_code' => $cart->discount_code,
             'discount_price' => $cart->discount_price,
             'session_id' => $cart->session??"",
-            'payment' => $cart->payment,
+            'method_payment' => $cart->method_payment,
             'note' => $cart->note,
             'details' => $cart->details,
             'detailsShort' => $cart->Short,
@@ -35,8 +31,6 @@ class CartTransformer extends TransformerAbstract
             'total_price' => $cart->total_price,
             'info_payment' => json_decode($cart->info_payment),
             'gifts' => json_decode($cart->gifts),
-            'warehouses' =>  json_decode($cart->warehouses), 
-            'warehouse_id' =>  $cart->warehouse_id??0,
             // 'gifts' => [],
             'total_pay' => $cart->total_pay,
             'created_at'  => $cart->created_at,

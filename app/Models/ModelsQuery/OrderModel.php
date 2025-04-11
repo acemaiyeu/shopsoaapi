@@ -37,12 +37,6 @@ class OrderModel extends Model
         if (!empty($request['username'])){
             $query->where('username', $request['username']);
         }
-        if (!empty($request['user_id'])){
-            $query->where('user_id', $request['user_id']);
-        }
-        if (!empty($request['user_id'])){
-            $query->where('user_id', $request['user_id']);
-        }
         if (!empty($request['start_time'])){
             $query->where('created_at', '>=', $request['start_time']);
         }
@@ -73,9 +67,6 @@ class OrderModel extends Model
             if (empty($cart)){
                 return ["message" => "Không tìm thấy giỏ hàng", "status_code" => 400];
             }
-            if (empty($cart->warehouse_id)){
-                return ["message" => "Không tìm thấy đơn vị vận chuyển không thể đặt hàng!", "status_code" => 400];
-            }
             $order = new Order();
                 $date = Carbon::now('Asia/Ho_Chi_Minh');
                 $order->code = "DH_" . $date->format('Y') . $date->format('m') . $date->format('d') . $date->format('H') . $date->format('i') . $date->format('s')  . random_int(100, 999);
@@ -88,7 +79,6 @@ class OrderModel extends Model
                 $order->phone_number = $cart->phone_number??$req['phone'];
                 $order->address = $cart->address??$req['address'];
                 $order->discount_price  = $cart->discount_price;
-                $order->warehouse_id  = $cart->warehouse_id;
                 
                 $order->discount_code  = $cart->discount_code;
                 $order->total_price = $cart->total_pay;
@@ -104,7 +94,7 @@ class OrderModel extends Model
                     $detail_order->order_id = $order->id;
                     $detail_order->product_id = $detail->product_id??null;
                     $detail_order->product_code = $detail->product->code;
-                    $detail_order->product_name = $detail->product->name;
+                    $detail_order->product_name = $detail->product->code;
                     $detail_order->qty = $detail->qty??1;
                     $detail_order->price = $detail->price;
                     $detail_order->price_text = number_format($detail->price,0,',','.') . " đ";
@@ -164,37 +154,5 @@ class OrderModel extends Model
             throw $e;
         }     
 
-    }
-    public function ratingOrder($req){
-        try {
-            DB::beginTransaction();
-                $order = Order::whereNull('deleted_at')->where('user_id', auth()->user()->id)->find($req['order_id']);
-                if (empty($order)){
-                    return ["message" => "Đơn hàng không tồn tại!"];
-                }
-                if ($order->rating > 0){
-                    return ["message" => "Đơn hàng đã được đánh giá!"];
-                }
-                $order->rating = $req['star'];
-                $order->save();
-
-                $cart_details = OrderDetail::whereNull('deleted_at')->where('order_id', $order->id)->with('product')->get();
-                foreach($cart_details as $detail){
-                    $ratings = !empty($detail->product->rates)?json_decode($detail->product->rates):[];
-                    $ratings [count($ratings)] = [
-                        "order_id"  => $order->id,
-                        "user_id"   => auth()->user()->id,
-                        "rating"    => $order->rating
-                    ];
-                    $product = $detail->product;
-                    $product->rates = json_encode($ratings);
-                    $product->save();
-                }
-            DB::commit();
-            return $order;
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return ["message" => $e];
-        }     
     }
 }

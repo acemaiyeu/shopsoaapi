@@ -9,41 +9,28 @@ use Carbon\Carbon;
 use App\Models\PromoCode;
 use App\Models\Cart;
 use Illuminate\Support\Arr;
-use Illuminate\Support\Facades\DB;
 
 class PromoCodeModel extends Model
 {
     public function getPromoCode($request){
         $query =  PromoCode::query();
         $query->whereNull('deleted_at')->whereNull('deleted_by');
-        if (!empty($request['start_time'])){
-            $query->where('start_date','>=', $request['start_time']);
+        if (!empty($request['start_date'])){
+            $query->where('start_date','<=', $request['start_date']);
         }
-        if (!empty($request['end_time'])){
-            $query->where('end_date','<=',$request['end_time']);
+        if (!empty($request['end_date'])){
+            $query->where('end_date','>=',$request['end_date']);
         }
         if (!empty($request['code'])){
-            $query->where('code', $request['code']);
+            $query->where('end_date','>=',Carbon::now());
         }
         if (!empty($request['name'])){
             $query->where('name','like', "%" . $request['name'] . "%");
         }
         if (!empty($request['status'])){
-            if ($request['status'] == "ON"){
-                $request['status'] = 1;
-            }  
-            if ($request['status'] == "OFF"){
-                $request['status'] = 0;
-            }   
-            if ($request['status'] == 0 || $request['status'] == 1){
-                $query->where('status',$request['status']);
-            } 
+            $query->where('status', $request['status']);
         }
-        if (!empty($request['created_by'])){
-            $query->whereHas('createdBy', function($query) use($request){
-                $query->where('username', 'like', "%" . $request['created_by'] . "%");
-            });
-        }
+
         
             return $query->get();
     }
@@ -245,33 +232,5 @@ class PromoCodeModel extends Model
         if ($method == ">="){
             return $value >= $value2;
         }
-    }
-    public function create($req){
-        $promo = new PromoCode();
-        if (!empty($req['id'])){
-            $promo  = PRomoCode::whereNull('deleted_at')->find($req['id']);
-        }
-
-       try{
-            DB::beginTransaction();
-                $promo->condition_data               = !empty($req['condition_data'])?json_encode($req['condition_data']):$promo->condition_data;
-                $promo->discount                    = !empty($req['discount'])?json_encode($req['discount']):$promo->discount;
-                $promo->discounts                     = !empty($req['discounts'])?$req['discounts']:($promo->discounts??0);
-                $promo->status                       = !empty($req['status'])?$req['status']:$promo->status;
-                $promo->type                       = !empty($req['type'])?$req['type']:($promo->type??"product");
-                $promo->code                         = !empty($req['code'])?$req['code']:$promo->code;
-                $promo->name                         = !empty($req['name'])?$req['name']:$promo->name;
-                $promo->start_date                   = !empty($req['start_date'])?Carbon::parse($req['start_date']):$promo->start_date;
-                $promo->end_date                     = !empty($req['end_date'])?Carbon::parse($req['end_date']):$promo->end_date;
-                $promo->condition_info_apply         = !empty($req['condition_info_apply'])?$req['condition_info_apply']:$promo->condition_info_apply;
-                $promo->save();
-            DB::commit();
-            return $promo;
-        }catch(\Exception $e) {
-            DB::rollBack();         
-            return ["data" => ["message" => $e]];
-        }
-        
-
     }
 }

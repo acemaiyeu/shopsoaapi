@@ -2,7 +2,6 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProductController;
-use App\Http\Controllers\Api\UserController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -17,5 +16,5 @@ use App\Http\Controllers\Api\UserController;
 Route::get('/', function () {
     return view('welcome');
 });
-Route::get('/public-path', [UserController::class, 'getPublicPath']);
+
 // Route::get('/', [ProductController::class, 'index']);

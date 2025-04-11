@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\PromotionDetail;
-use App\Models\User;
 
 class Promotion extends Model
 {
@@ -26,8 +25,5 @@ class Promotion extends Model
     ];
     public function details(){
         return $this->hasMany(PromotionDetail::class)->whereNull('deleted_at')->select('type','condition','condition_data','data');
-    }
-    public function createdBy(){
-        return $this->hasOne(User::class, 'id', 'created_by')->select('id','username');
     }
 }

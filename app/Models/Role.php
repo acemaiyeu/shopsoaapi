@@ -4,7 +4,6 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\CartDetail;
 use App\Models\User;
 
 class Role extends Model
@@ -12,6 +11,7 @@ class Role extends Model
     use HasFactory;
     protected $table = 'roles';
     protected $fillable = [
+        'id',
         'code',
         'name',
         'created_at',
@@ -21,7 +21,7 @@ class Role extends Model
         'deleted_at',
         'deleted_by'
     ];
-    public function createdBy(){
-        return $this->hasOne(User::class, 'id', 'created_by');
+    public function users(){
+        return $this->hasMany(User::class);
     }
 }

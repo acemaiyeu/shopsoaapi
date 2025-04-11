@@ -10,8 +10,10 @@ use Laravel\Sanctum\HasApiTokens;
 use Tymon\JWTAuth\Contracts\JWTSubject;
 use App\Models\Cart;
 use App\Models\Order;
+use App\Models\City;
+use App\Models\District;
+use App\Models\Ward;
 use App\Models\Role;
-use App\Models\PermissionDetail;
 
 class User extends Authenticatable implements JWTSubject
 {
@@ -28,6 +30,7 @@ class User extends Authenticatable implements JWTSubject
      protected $fillable = [
         'name',
         'username',
+        'fullname',
         'email',
         'phone',
         'password',
@@ -40,6 +43,7 @@ class User extends Authenticatable implements JWTSubject
         'deleted_at',
         'deleted_by'
     ];
+
 
     /**
      * The attributes that should be hidden for serialization.
@@ -81,20 +85,16 @@ class User extends Authenticatable implements JWTSubject
                     ->orWhere('username', $identifier)
                     ->first();
     }
-    public function role(){
-        return $this->hasOne(Role::class, 'code', 'role_code')->select('code','name');
+    protected function city(){
+        return $this->belongsTo(City::class);
     }
-    public function permission_details(){
-        return $this->hasMany(PermissionDetail::class, 'user_id', 'id')->with('permission')->select('id','user_id','permission_id');
+    protected function district(){
+        return $this->belongsTo(District::class);
     }
-    public function permissions()
-    {
-        return $this->belongsToMany(Permission::class, 'permission_details')->with;
+    protected function ward(){
+        return $this->belongsTo(Ward::class);
     }
-    public function hasPermission($permissionCode)
-    {
-        return $this->permission_details()->whereHas('permission', function($query) use($permissionCode) {
-            $query->where('code', $permissionCode);
-        })->exists();
+    protected function role(){
+        return $this->belongsTo(Role::class);
     }
 }

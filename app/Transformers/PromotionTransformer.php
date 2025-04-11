@@ -25,7 +25,6 @@ class PromotionTransformer extends TransformerAbstract
             'show_web'          => $promotion->show_web,
             'img'          => $promotion->img,
             'created_at'    => $promotion->created_at,
-            'createdBy'     => $promotion->createdBy??null
         ];
     }
 }

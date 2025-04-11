@@ -7,25 +7,21 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\CartDetail;
 use App\Models\User;
 
-class Cart extends Model
+class Discount extends Model
 {
     use HasFactory;
-    protected $table = 'carts';
+    protected $table = 'discounts';
+
     protected $fillable = [
         'id',
-        'user_id',
-        'session',
-        'payment',
-        'discount_code',
-        'discount_price',
-        'note',
-        'user_address',
-        'user_phone',
-        'user_email',
-        'fullname',
-        'info_payment',
-        'total_price',
-        'total_pay',
+        'code',
+        'name',
+        'start_date',
+        'end_date',
+        'active',
+        'show',
+        'condition_apply',
+        'condition_info',
         'created_at',
         'created_by',
         'updated_at',
@@ -33,8 +29,8 @@ class Cart extends Model
         'deleted_at',
         'deleted_by'
     ];
-    public function details(){
-        return $this->hasMany(CartDetail::class)->with("theme")->select('id','cart_id','theme_id','quantity','price','total_price','total_text','discount_price','discount_code');
+    public function conditions(){
+        return $this->hasMany(DiscountConditions::class)->select('id','discount_id','condition_apply','condition_data');
     }
     // public function detailsHaveProductSort(){
     //     return $this->hasMany(CartDetail::class)->with("productShort")->select('cart_id','theme_id','quantity','price','total_price','total_text');

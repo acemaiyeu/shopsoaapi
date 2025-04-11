@@ -4,41 +4,54 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use App\Models\ModelsQuery\CategoryModel;
+use App\Models\ModelsQuery\ProductVarianModel;
 use App\Transformers\CategoryTransformer;
-use Carbon\Carbon;
-
-use Illuminate\Support\Facades\Http;
+use App\Models\ModelsQuery\CategoryModel;
+use App\Http\Requests\CategoryCreateValidator;
+use App\Http\Requests\CategoryUpdateValidator;
+use App\Models\Category;
 class CategoryController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    protected $categoryModel;
+    protected $model;
     public function __construct(CategoryModel $model) {
-       $this->categoryModel = $model;
+        $this->model = $model;
     }
-    
+    public function getCategory(Request $req){
+        $categories = $this->model->getCategory($req);
+        return  fractal($categories, new CategoryTransformer())->respond(); 
+    } 
+    public function getDetail($id){
+        $req = ["id" => $id, "limit" => 1];
+        $categories = $this->model->getCategory($req);
+        return  fractal($categories, new CategoryTransformer())->respond(); 
+    } 
+    public function create(CategoryCreateValidator $req){
+        $data = $req->validated(); 
+        $category = $this->model->createOrUpdate($data);
 
-    public function getAllCategoryForAdmin(Request $req){
-       $warranty =  $this->categoryModel->getAllCategory($req);
-       return fractal($warranty, new CategoryTransformer())->respond();
-    }
-    public function getDetailCategoryForAdmin(Request $req, $code){
-        $req['limit']  = 1;
-        $req['code'] = $code;
-        $category =  $this->categoryModel->getAllCategory($req);
+        if (is_array($category)){
+            return response()->json($category, $category['status']);
+        }
         return fractal($category, new CategoryTransformer())->respond();
     }
-    public function saveCategory(Request $req){
-        $category =  $this->categoryModel->saveCategory($req);
-        return $category;
+    public function update(CategoryUpdateValidator $req){
+        $data = $req->validated();
+        $category = $this->model->createOrUpdate($data);
+
+        if (is_array($category)){
+            return response()->json($category, $category['status']);
+        }
         return fractal($category, new CategoryTransformer())->respond();
     }
-
-    
-    public function deleteByCode(Request $req){
-        Category::whereNull('deleted_at')->where('code', $req['code'])->update(['deleted_at' => Carbon::now('Asia/Ho_Chi_Minh'), "deleted_by" => auth()->user()->id]);
-        return response(["data" => ["message" => "Đã xóa thành công!"]],200);
-    }
+    public function deleteCategory($id){
+        $category = Category::whereNull("deleted_at")->find($id);
+        if (!$category){
+            return response()->json(["status" => 404, "message" => "Không tìm thấy dữ liệu"], 404);
+        }
+        $category->update(["deleted_at" => now(), "deleted_by" => auth()->user()->id]);
+        return response()->json(['status' => 200, 'message' => 'Xóa danh sách thành công'], 200);
+    }  
 }

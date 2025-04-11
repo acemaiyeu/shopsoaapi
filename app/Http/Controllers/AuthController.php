@@ -5,9 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\SessionLogin;
-use Illuminate\Support\Facades\Hash;
-use App\Models\User;    
-use Carbon\Carbon;
+use App\Models\User;
+use App\Transformers\UserClientTransformer;
+use App\Models\ModelsQuery\UserModel;
 
 class AuthController extends Controller
 {
@@ -17,9 +17,11 @@ class AuthController extends Controller
      *
      * @return void
      */
-    public function __construct()
+    protected $model;
+    public function __construct(UserModel $model)
     {
-        $this->middleware('auth:api', ['except' => ['login']]);
+        $this->middleware('auth:api', ['except' => ['login','register', 'profile', 'logout','updateProfile']]);
+        $this->model = $model;
     }
 
     /**
@@ -34,14 +36,20 @@ class AuthController extends Controller
         if (! $token = auth()->attempt($credentials)) {
             return response()->json(['error' => 'Unauthorized'], 401);
         }
-        if (!empty(request('type'))){
-            if (auth()->user()->role->code != "SUPERADMIN" && auth()->user()->role->code != "DISTRIBUTOR"){
-                return response()->json(['data' => ["message" => "Tài khoản đăng nhập phải là admin !"]], 401);
-            }
-           
-        }
-        SessionLogin::where('user_id', auth()->user()->id)->where('deleted_at', null)->update(['deleted_at' => Carbon::now()]);
+
         return $this->respondWithToken($token);
+    }
+    public function register(Request $req){
+        $user = User::where('email',$req->email)->exists();
+        if (!$user){
+            $user = User::create([
+                'fullname' => $req->fullname,
+                'email' => $req->email,
+                'password' => bcrypt($req->password)
+            ]);
+            $token = auth()->login($user);
+            return $this->respondWithToken($token);
+        }
     }
 
     /**
@@ -51,40 +59,13 @@ class AuthController extends Controller
      */
     public function profile()
     {
-        return response()->json(auth()->user());
+        // return response()->json(auth()->user());
+        if (empty(auth()->user())) {
+            return response()->json(['status' => 404,'message' => 'Không tìm thấy người dùng'], 404);
+        }
+        return fractal(auth()->user(), new UserClientTransformer())->respond();
     }
 
-    public function update(Request $req)
-    {
-        $user = auth()->user();
-        if (!empty($user)){
-            if (!empty($req['username'])){
-                $user->username = $req['username'];
-            }
-            if (!empty($req['email'])){
-                if (!empty(User::whereNull('deleted_at')->where('email', $req['email'])->first()) && $req['email'] != $user->email){
-                    return response(["data" => ["message" => "Email đã tồn tại!"]],400);
-                }else{
-                   
-                    $user->email = $req['email'];
-                }   
-            }
-            if (!empty($req['password'])){
-                $user->password = Hash::make($req['password']);
-            }
-            if (!empty($req['address'])){
-                $user->address = $req['address'];
-            } 
-            if (!empty($req['phone'])){
-                $user->phone = $req['phone'];
-            }
-            if (!empty($req['avatar'])){
-                $user->avatar = $req['avatar'];
-            }
-            $user->save();
-        }
-        return response()->json($user);
-    }
 
     /**
      * Log the user out (Invalidate the token).
@@ -95,7 +76,16 @@ class AuthController extends Controller
     {
         auth()->logout();
 
-        return response()->json(['message' => 'Successfully logged out']);
+        return response()->json(['message' => 'Successfully logged out','updateProfile']);
+    }
+    public function updateProfile(Request $req)
+    {
+        // return response()->json(auth()->user());
+        $user = $this->model->updateProfile($req);
+        if(is_array($user)){
+            return response()->json($user, $user['status']);
+        }
+        return fractal(auth()->user(), new UserClientTransformer())->respond();
     }
 
     /**

@@ -21,19 +21,8 @@ class ProductTransformer extends TransformerAbstract
         }
         return $products_2;
     }
-    public function totalRating($ratings){
-        $total_rate = 0;
-        for($i = 0; $i < 10000; $i++){
-            if(empty($ratings[$i])){
-                break;
-            }
-            $total_rate += (int) $ratings[$i]->rating;
-        }
-        return $total_rate;
-    }
     public function transform(Product $product)
     {
-      
         
         return [
             'id' => $product->id,
@@ -50,10 +39,7 @@ class ProductTransformer extends TransformerAbstract
             'varians'           => json_decode($product->varians),
             'weight'            => $product->weight,
             'weight_unit'       => $product->weight_unit,
-            "ratings"           =>json_decode($product->rates),
-            'total_rating'      => $this->totalRating(json_decode($product->rates), true),
-            'varians'           => $this->getVarianTogether($product->varian_product),
-            'category'          => $product->category
+            'varians'           => $this->getVarianTogether($product->varian_product)
         ];
     }
 

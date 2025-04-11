@@ -4,15 +4,16 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Fillter;
+use App\Models\User;
 
-class ProductFillter extends Model
+class District extends Model
 {
     use HasFactory;
-    protected $table = 'product_fillters';
+    protected $table = 'districts';
     protected $fillable = [
-        'type',
-        // 'product_fillter_type',
+        'id',
+        'code',
+        'name',
         'created_at',
         'created_by',
         'updated_at',
@@ -20,8 +21,7 @@ class ProductFillter extends Model
         'deleted_at',
         'deleted_by'
     ];
-    
-    public function getFillters(){
-        return $this->hasMany(Fillter::class, 'product_fillter_type', 'type');
+    public function users(){
+        return $this->hasMany(User::class);
     }
 }

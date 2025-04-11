@@ -9,7 +9,6 @@ use App\Transformers\ProductTransformer;
 use App\Transformers\ProductFillterTransformer;
 use App\Transformers\ProductAdminTransformer;
 use App\Models\ModelsQuery\ProductModel;
-use Carbon\Carbon;
 
 class ProductController extends Controller
 {
@@ -22,14 +21,8 @@ class ProductController extends Controller
 
     }
     public function index(Request $request)
-    {   
-        $products =  $this->product_model->getAllProducts($request);
-        return fractal($products, new ProductTransformer())->respond();
-    }
-    
-    public function indexByAdmin(Request $request)
     {   $request['limit'] = 1000;
-        $products =  $this->product_model->getAllProductsByAdmin($request);
+        $products =  $this->product_model->getAllProducts($request);
         return fractal($products, new ProductTransformer())->respond();
     }
     public function getFillterForProductType(Request $request){
@@ -46,9 +39,9 @@ class ProductController extends Controller
         return fractal($product, new ProductTransformer())->respond();
     }   
     public function detailAdmin(Request $request, $id)
-    {   $request['limit'] = 1;
+    {   $request['limit'] =1;
         $request['id'] = $id;
-        $product = $this->product_model->getAllProductsByAdmin($request);
+        $product = $this->product_model->getAllProducts($request);
         return fractal($product, new ProductAdminTransformer())->respond();
     }   
     public function create(Request $request)
@@ -85,7 +78,6 @@ class ProductController extends Controller
      */
     public function destroy(string $id)
     {
-        Product::whereNull('deleted_at')->where('id',$id)->update(['deleted_at' => Carbon::now('Asia/Ho_Chi_Minh'), "deleted_by" => auth()->user()->id]);
-        return response(["data" => ["message" => "Đã xóa thành công!"]],200);
+        //
     }
 }
