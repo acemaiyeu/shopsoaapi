@@ -3,8 +3,10 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator; // ✅ Import Validator
+use Illuminate\Http\Exceptions\HttpResponseException; // ✅ Import HttpResponseException
 
-class confirmOrderValidate extends FormRequest
+class ConfirmOrderValidate extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -23,22 +25,28 @@ class confirmOrderValidate extends FormRequest
     {
         return [
             'id'       => 'required',
-            'username' => 'required',
-            'address'  => 'required',
-            'phone' => 'required',
+            'fullname' => 'required',
+            'user_email'  => 'required|email',
+            'user_phone'    => 'required',
         ];
     }
+
     public function messages()
     {
         return [
-            'id.required' => 'ID không được để trống!',
-            'username.required' => 'Họ và tên khách hàng không được để trống!',
-            'address.required' => 'Địa chỉ nhận hàng không được để trống!',
-            'phone.required' => 'Số điện thoại không được để trống!',
-            // 'email.unique' => 'Email đã tồn tại!',
-            // 'password.required' => 'Mật khẩu không được để trống!',
-            // 'password.min' => 'Mật khẩu phải có ít nhất 6 ký tự!',
-            // 'password.confirmed' => 'Mật khẩu nhập lại không khớp!',
+            'id.required'       => 'ID không được để trống!',
+            'fullname.required' => 'Họ và tên khách hàng không được để trống!',
+            'user_email.required'  => 'Email không được để trống!',
+            'user_email.email'  => 'Vui lòng nhập đúng định dạng email!',
+            'user_phone.required'    => 'Số điện thoại không được để trống!',
         ];
+    }
+
+    protected function failedValidation(Validator $validator)
+    {
+        throw new HttpResponseException(response()->json([
+            'errors'  => $validator->errors(),
+            'message' => 'Validation Failed'
+        ], 422));
     }
 }

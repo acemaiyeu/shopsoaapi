@@ -65,7 +65,7 @@ Route::group([
         Route::get('/product-detail/{id}', [ProductController::class, 'detail']);
         Route::get('/product-detail', [ProductController::class, 'detail']);
         Route::get('/promocodes', [PromoCodeController::class, 'getPromoCodeClient']);
-        Route::post('/add-disount', [DiscountController::class, 'addDiscountCart']);
+        Route::post('/add-discount', [DiscountController::class, 'addDiscountCart']);
         Route::get('/discounts', [DiscountController::class, 'getDiscounts']);
 
         //Order

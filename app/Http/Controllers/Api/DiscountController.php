@@ -23,5 +23,12 @@ class DiscountController extends Controller
         $discounts = $this->model->getDiscounts($request);
         return fractal($discounts, new DiscountTransformer())->respond();
     }
+    public function addDiscountCart(Request $request){
+        $discount = $this->model->addDiscountCart($request);
+        if ($discount){ 
+            return response()->json(["message" => "Thành công"], 200);
+        }
+        return response()->json(["message" => "Không thành công"], 400);
+    }
 
 }

@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Promotion;
 use App\Models\CartDetail;
-use App\Models\ProductFillter;
+use App\Models\Telegram;
 use App\Models\Order;
 use App\Models\OrderDetail;
 use App\Models\Cart;
@@ -75,35 +75,32 @@ class OrderModel extends Model
                 
                 $order->cart_id = $cart->id;
                 $order->user_id = $cart->user_id??null;
-                $order->username = $cart->username??$req['username'];
-                $order->phone_number = $cart->phone_number??$req['phone'];
-                $order->address = $cart->address??$req['address'];
+                $order->fullname = $cart->fullname??$req['fullname'];
+                $order->user_phone = $cart->phone_number??$req['user_phone'];
+                $order->user_email = $cart->address??$req['user_email'];
                 $order->discount_price  = $cart->discount_price;
                 
                 $order->discount_code  = $cart->discount_code;
-                $order->total_price = $cart->total_pay;
+                $order->total_price = $cart->total_price;
                 
-                $order->status = $req['status']??"PENDING";
-                $order->status_text = $req['status_text']??"Chưa duyệt";
-                $order->gifts = $cart->gifts??null;
+                $order->status = 1;
+               
                 $order->info_payment = $cart->info_payment;
                 
                 $order->save();
                 foreach($cart->details as $detail){
                     $detail_order = new OrderDetail();
                     $detail_order->order_id = $order->id;
-                    $detail_order->product_id = $detail->product_id??null;
-                    $detail_order->product_code = $detail->product->code;
-                    $detail_order->product_name = $detail->product->code;
-                    $detail_order->qty = $detail->qty??1;
+                    $detail_order->theme_id = $detail->theme_id;
+                    $detail_order->quantity = $detail->quantity??1;
                     $detail_order->price = $detail->price;
                     $detail_order->price_text = number_format($detail->price,0,',','.') . " đ";
-                    $detail_order->discount_price = $detail->discount_price??0;
-                    $detail_order->discount_price_text = number_format($detail->discount_price ?? 0,0,',','.') . " đ";
-                    $detail_order->discount_name = $detail->discount_name??"";
+                    // $detail_order->discount_price = $detail->discount_price??0;
+                    // $detail_order->discount_price_text = number_format($detail->discount_price ?? 0,0,',','.') . " đ";
+                    // $detail_order->discount_name = $detail->discount_name??"";
                     // $order->discount_price_text = number_format($detail->discount_price,0,',','.') . " đ";
-                    $detail_order->discount_code = $detail->discount_code??"";
-                    $detail_order->total_price = $detail->total;
+                    // $detail_order->discount_code = $detail->discount_code??"";
+                    $detail_order->total_price = $detail->total_price;
                     $detail_order->total_price_text = number_format($detail->total,0,',','.') . " đ";
                     $detail_order->save();
                     $detail->deleted_at = $date;
@@ -113,6 +110,7 @@ class OrderModel extends Model
                 $cart->deleted_at = $date;
                 $cart->save();
             DB::commit();
+            Telegram::sendMessage("Có đơn hàng mới " . $order->code . " vào lúc " . Carbon::now('Asia/Ho_Chi_Minh')->format('H:i d/m/Y'));
             return $order;
         } catch (\Exception $e) {
             DB::rollBack();

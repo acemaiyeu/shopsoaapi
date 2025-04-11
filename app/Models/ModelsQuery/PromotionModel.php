@@ -6,7 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Promotion;
 use App\Models\CartDetail;
-use App\Models\ProductFillter;
+use App\Models\Discount;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -51,206 +51,78 @@ class PromotionModel extends Model
 
         // $cart->discount_price = 0;
         $info_payment[0] = [
-            "total_price" => $cart->details->sum('total_price') - $cart->discount_price,
-            "total_price_text" => number_format($cart->details->sum('total_price') - $cart->discount_price,0,',','.') . " đ",
+            "total_price" => $cart->details->sum('total_price'),
+            "total_price_text" => number_format($cart->details->sum('total_price'),0,',','.') . " đ",
             "name_show" => "Tổng tiền hàng"
         ];
 
-        // $promotions = Promotion::whereNull('deleted_at')->where('start_time','<=',Carbon::now())->where('end_time','>=',Carbon::now())->where('status',1)->get();
-        // if (!empty($promotions)){
-        //         foreach($promotions as $promotion){
-        //             //dieu kien
-        //             $next = false;
-        //             if (!empty($promotion->conditions)){
-        //                 $conditions = json_decode($promotion->conditions);
-        //                 if (count($conditions) <= 1){
-        //                     $promotion->condition_apply = "ANY";
-        //                 }
-        //                 foreach($conditions as $condition){
-        //                     if (($condition->type) == "PRODUCT_ON_CART"){
-        //                         if ($promotion->condition_apply == "ANY"){
-        //                             foreach($condition->condition_data as $data){
-        //                                 foreach($cart->details as $detail){
-        //                                      if ($data->condition_type == "price"){
-                                                 
-        //                                          if ($detail->product->code == $data->product_code && $this->comparative($detail->product->price,$data->condition,$data->number)){
-        //                                              $next = true;
-        //                                              break;
-        //                                          }   
-        //                                      }
-        //                                      if ($data->condition_type == "number"){
-        //                                          if ($detail->product->code == $data->product_code && $this->comparative($detail->qty, $data->condition,$data->number)){
-        //                                              $next = true;
-        //                                              break;
-        //                                          }  
-        //                                      }
-                                             
-        //                                 } 
-        //                             }
-        //                         }
-        //                         if ($promotion->condition_apply == "TOGETHER"){
-        //                             $found = false;
-        //                             foreach($condition->condition_data as $data){
-        //                                 $found = collect($cart->details)->contains(function ($item) use ($data) {
-        //                                     if ($data->condition_type == "number"){
-        //                                         return $item->product->code == $data->product_code && $this->comparative($data->number,$data->condition,$item->qty);
-        //                                     }
-        //                                     if ($data->condition_type == "price"){
-        //                                         return $item->product->code == $data->product_code && $this->comparative($data->number,$data->condition,$item->price);
-        //                                     }
-        //                                 }); 
-        //                                 if ($found == false){
-        //                                     break;
-        //                                 }
-        //                             }
-        //                             if ($found){
-        //                                 $next = true;
-        //                             }
-        //                         }
-        //                     }
-        //                 }
-        //             }
-        //             if($next == false){
-        //                 continue;
-        //             }
-                    
-        //             $gifts = json_decode($promotion->gifts);
-        //             if (!empty($gifts)){
-        //                 foreach($gifts as $item){
-        //                     if ($item->type == "DIRECT_GIFT"){ //qua tang truc tiep
-        //                             foreach($item->gifts as $gift){
-        //                                 $product_gift = Product::whereNull('deleted_at')->where('code',$gift->product_code)->select('id','code','name','image_url')->first();
-                                        
-        //                                 $scope_product_qty_cart = 0;
-        //                                 foreach($cart->details as $d){
-        //                                     if ($d->product_id == ($product_gift->id ?? 0)){
-        //                                         $scope_product_qty_cart = $d->qty;
-        //                                     }
-        //                                 }
-        //                                 // dd($this->cartModel->getWarehouseNear($cart->lat, $cart->lon, $product_gift->id ?? 0)['data']);
-        //                                 // dd($this->cartModel->getWarehouseNear($cart->lat, $cart->lon, $product_gift->id ?? 0)['data']['qty'],($gift->qty + $scope_product_qty_cart));
-        //                                 if (!empty($product_gift) && $this->cartModel->getWarehouseNear($cart->lat, $cart->lon, $product_gift->id ?? 0)['data']['qty'] >= ($gift->qty + $scope_product_qty_cart)) {
-        //                                     $cart->gifts = array_merge($cart->gifts ?? [], [
-        //                                         [   "promotion_code" => $promotion->promotion_name,
-        //                                             "promotion_name" => $promotion->promotion_name,
-        //                                             "product_code" => $product_gift->code,
-        //                                             "product_name" => $product_gift->name,
-        //                                             "product_image" => $product_gift->image_url,
-        //                                             "qty" => $gift->qty
-        //                                         ]
-        //                                     ]);    
-        //                                 }
-        //                             }
-        //                     }
-        //                     if ($item->type == "DISCOUNT_PRICE"){ //giảm giá sản phẩm
-        //                         foreach($item->gifts as $gift){
-        //                             if ($gift->type_discount == "percent"){
-        //                                 // $product_gift = Product::whereNull('deleted_at')->where('code',$gift->product_code)->select('code','price','name','image_url')->first();
-
-        //                                     foreach($cart->details as $detail){
-        //                                         if ($detail->product->code == $gift->product_code){
-                                                    
-        //                                             $detail->discount_price = 0;
-        //                                             $detail->discount_code= "";
-        //                                             $detail->discount_name = "";
-
-        //                                             $detail->discount_code = $promotion->promotion_code;
-        //                                             $detail->discount_name = $promotion->promotion_name;
-
-        //                                             $discount = (($detail->product->price * $detail->qty) * $gift->value) / 100;
-                                                    
-                                                    
-
-        //                                             if ($discount > ($detail->product->price * $detail->qty)){
-        //                                                 $discount = ($detail->product->price * $detail->qty);
-        //                                             }
-                                                    
-        //                                             $detail->discount_price = $discount;
-        //                                             $detail->total = ($detail->product->price * $detail->qty) - $discount;
-        //                                             $detail->total_text = number_format($detail->total,0,',','.') . " đ";
-        //                                             $detail->total_old_text = number_format(($detail->product->price * $detail->qty),0,',','.') . " đ";
-
-        //                                             $info_payment[] = [
-        //                                                 "total_price" => $discount,
-        //                                                 "total_price_text" => "-" . number_format($discount,0,',','.') . " đ",
-        //                                                 "name_show" => $promotion->promotion_name
-        //                                             ];
-        //                                             if($detail->product_id == 25){
-        //                                                 // dd($detail->id, $detail->discount_price);
-        //                                             }
-        //                                             $detail->save();
-        //                                             $cart->discount_price += $discount;
-        //                                             break;
-        //                                         }
-        //                                     }
-        //                             }
-
-        //                             if ($gift->type_discount == "price"){
-        //                                 // $product_gift = Product::whereNull('deleted_at')->where('code',$gift->product_code)->select('code','price','name','image_url')->first();
-
-        //                                     foreach($cart->details as $detail){
-        //                                         if ($detail->product->code == $gift->product_code){
-                                                    
-        //                                             $detail->discount_price = 0;
-        //                                             $detail->discount_code= "";
-        //                                             $detail->discount_name = "";
-
-        //                                             $detail->discount_code = $promotion->promotion_code;
-        //                                             $detail->discount_name = $promotion->promotion_name;
-
-        //                                             $discount = (($detail->product->price * $detail->qty) - $gift->value);
-                                                    
-                                                    
-
-        //                                             if ($discount > ($detail->product->price * $detail->qty)){
-        //                                                 $discount = ($detail->product->price * $detail->qty);
-        //                                             }
-
-        //                                             $detail->discount_price = $discount;
-        //                                             $detail->total = ($detail->product->price * $detail->qty) - $discount;
-
-        //                                             $detail->total_text = number_format($detail->total,0,',','.') . " đ";
-        //                                             $detail->total_old_text = number_format(($detail->product->price * $detail->qty),0,',','.') . " đ";
-        //                                             $cart->discount_price += $discount;
-
-        //                                             $info_payment[] = [
-        //                                                 "total_price" => $discount,
-        //                                                 "total_price_text" => "-" . number_format($discount,0,',','.') . " đ",
-        //                                                 "name_show" => $promotion->promotion_name
-        //                                             ];
-                                                    
-        //                                             $detail->save();
-        //                                             break;
-        //                                         }
-        //                                     }
-        //                             }
-        //                         }
-        //                     }
-        //                 }
-        //             }
-        //         }
-        //     }
         
+        //start Promotion Discount
+        if ($cart->discount_code){
+            $discount = Discount::whereNull('deleted_at')->where('code', $cart->discount_code)->with('conditions')->where('start_date', '<=', Carbon::now('Asia/Ho_Chi_Minh'))->where('end_date', '>=', Carbon::now('Asia/Ho_Chi_Minh'))->first();
+            if ($discount){
+                $apply = false;
+                if ($discount->condition_apply == "ALL"){
+                    foreach ($discount->conditions as $condition){
+                    if ($condition->type == "cart"){  
+                        if (!comparative($info_payment[0]['total_price'], $condition->condition_data->condition,$condition->condition_data->value)){
+                            $apply = true;
+                            break;
+                        }
+                    } 
+                    if ($condition->type == "theme_id"){  
+                        if (!in_array($condition->condition_data->value, array_column($cart->details, 'theme_id'))){
+                            $apply = true;
+                            break;
+                        }
+                    } 
+                }
+                }else{
+                    foreach ($discount->conditions as $condition){
+                        
+                        if ($condition->condition_apply== "cart"){  
+                            if ($this->comparative($info_payment[0]['total_price'], $condition->condition_data->condition,$condition->condition_data->value)){
+                                $apply = true;
+                                break;
+                            }
+                        } 
+                        if ($condition->condition_apply == "theme_id"){  
+                            if (in_array($condition->condition_data->value, array_column($cart->details, 'theme_id'))){
+                                $apply = true;
+                                break;
+                            }
+                        } 
+                    }
+                }
+    
+                if ($apply){
+                    $discount_total = 0;
+                    if ($discount->discount_price > 0){
+                        $discount_total = $discount->discount_price;
+                    }
+                
+                    if ($discount->discount_percent > 0){
+                        $discount_total = $info_payment[0]['total_price'] * round(($discount->discount_percent / 100),1);
+                    }
+                    $cart->discount_code = $discount->code;
+                    // $cart->discount_name = $discount->name;
+                    $cart->discount_price = $discount_total;   
+                    $info_payment[count($info_payment)] = [
+                        "total_price" => $discount_total,
+                        "total_price_text" => "-" . number_format($discount_total,0,',','.') . " đ",
+                        "name_show" => $discount->name
+                    ];
+                }
+            }else{
+                $cart->discount_code = null;
+                // $cart->discount_name = null;
+                $cart->discount_price = 0;
+            }
+        }
 
 
-        //     // $cart->details()->saveMany($cart->details);
-
-
-
-        // $cart->info_payment = json_encode($info_payment);
-        // $cart = $this->promoCodeModel->applyPromoCode($cart); //use coupon
-
-
-        // $info_payment = json_decode($cart->info_payment);
-
-        // $info_payment[count($info_payment)] = [
-        //     "total_price" => 900000,
-        //     "total_price_text" => "-" .number_format(900000,0,',','.') . " đ",
-        //     "name_show" => "Giảm giá 10%"
-        // ];
-        
         $total_price_payment = $cart->details->sum('total_price') - $cart->discount_price;
-        
+        $cart->total_price = $total_price_payment;
         $info_payment[count($info_payment)] = [
             "total_price" => $total_price_payment,
             "total_price_text" => number_format($total_price_payment,0,',','.') . " đ",

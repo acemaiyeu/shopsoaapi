@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 use App\Models\Discount;
+use App\Models\Cart;
 
 class DiscountModel extends Model
 {
@@ -46,5 +47,22 @@ class DiscountModel extends Model
     //         return  ["status" => 500, "message" => $e];
     //     }
     // }
+    public function addDiscountCart($req){
+        if (!empty($req['session_id'])){
+            $cart = Cart::whereNull('deleted_at')->whereNull('deleted_by')->where('session', $req['session_id'])->first();
+            
+            $discount = Discount::whereNull('deleted_at')->whereNull('deleted_by')->where('code', $req['discount_code'])->where('active', 1)->where('start_date', '<=', Carbon::now('Asia/Ho_Chi_Minh'))->where('end_date', '>=', Carbon::now('Asia/Ho_Chi_Minh'))->first();
+           
+            if ($cart && $discount){
+                $cart->discount_code = $req['discount_code'];
+                $cart->discount_price = $req['discount_price'];
+                $cart->save();
+                return $cart;
+            }
+            return null;
+        }else{
+            return null;
+        }
+    }
    
 }

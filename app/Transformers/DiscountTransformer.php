@@ -16,6 +16,7 @@ class DiscountTransformer extends TransformerAbstract
             'code' => $discount->code,
             'name' => $discount->name,
             'end_date' => Carbon::parse($discount->end_date)->format('d-m-Y H:i:s'),
+            'condition_info' => $discount->condition_info,
             // 'conditions' => $discount->conditions,
             'created_at'  => $discount->created_at,
         ];

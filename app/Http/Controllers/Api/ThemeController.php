@@ -8,6 +8,7 @@ use App\Models\SessionLogin;
 use App\Transformers\ThemeTransformer;
 use App\Transformers\ThemeAdminTransformer;
 use App\Models\ModelsQuery\ThemeModel;
+use App\Models\Telegram;
 
 class ThemeController extends Controller
 {
@@ -20,6 +21,7 @@ class ThemeController extends Controller
     }
     public function getThemes(Request $request)
     {
+        Telegram::sendMessage('Auto sendMessages from ThemeController');
         $themes = $this->model->getThemes($request);
         return fractal($themes, new ThemeTransformer())->respond();
     }

@@ -30,6 +30,6 @@ class Order extends Model
         return $this->hasOne(User::class, 'id', 'user_id')->select('id','username');
     }
     public function details(){
-        return $this->hasMany(OrderDetail::class, 'order_id', 'id')->with('product')->select('id','order_id','product_id','product_code','product_name','price','qty','discount_code','discount_price', 'discount_name','total_price','price_text','total_price_text','discount_price_text');
+        return $this->hasMany(OrderDetail::class, 'order_id', 'id')->with('product')->select('id','order_id','theme_id','price','quantity','total_price','price_text','total_price_text');
     }
 }

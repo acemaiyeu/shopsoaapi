@@ -56,7 +56,7 @@ class OrderController extends Controller
             return fractal($orders, new OrderTransformer())->respond();
     }
     public function confirmOrder(confirmOrderValidate $req){
-       
+        // $data = $request->validated();
        $order =  $this->orderModel->createOrder($req);
        if ($order['status_code'] == 400){
         return response($order['message'],400);
