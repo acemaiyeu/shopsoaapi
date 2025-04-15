@@ -13,9 +13,11 @@ class userTransformer extends TransformerAbstract
     {
         return [
             'id' => $user->id,
-            'username'      => $user->username,
-            'role_code'     => $user->role_code,
-            'avatar'        => $user->avatar,
+            'fullname'      => $user->username,
+            'email'         => $user->email,    
+            'phone'         => $user->phone,
+            // 'role'     => $user->role,
+            // 'avatar'        => $user->avatar,
             'created_at'    => Carbon::parse($user->created_at)->format('d-m-Y')
         ];
     }

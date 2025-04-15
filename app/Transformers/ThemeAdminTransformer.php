@@ -23,6 +23,8 @@ class ThemeAdminTransformer extends TransformerAbstract
             'price_old_text' => number_format(0, 0, ',', '.') . ' ₫',
             'framework' => $theme->framework,
             'type' => $theme->type,
+            "document" => $theme->document,
+            'file' => $theme->file,
             // 'payment' => $theme->payment,
             // 'discount_code' => $theme->discount_code,
             // 'discount_price' => $theme->discount_price,

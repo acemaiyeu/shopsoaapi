@@ -28,6 +28,7 @@ class OrderModel extends Model
         // $query->with('cart');
         $query->with('user');
         $query->with('details');
+        $query->with('order_status');
         if (!empty($request['id'])){
             $query->where('id', $request['id']);
         }
@@ -63,7 +64,7 @@ class OrderModel extends Model
     public function createOrder($req){
         try {
             DB::beginTransaction();
-            $cart = Cart::whereNull('deleted_at')->with('details')->find($req['id']);
+            $cart = Cart::whereNull('deleted_at')->with('details')->where('id', $req['id'])->where('session', $req['session_id'])->first();
             if (empty($cart)){
                 return ["message" => "Không tìm thấy giỏ hàng", "status_code" => 400];
             }

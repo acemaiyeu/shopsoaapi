@@ -10,7 +10,12 @@ use App\Models\Discount;
 use App\Models\Cart;
 
 class DiscountModel extends Model
-{
+{   
+    public $promotionModel;
+    public function __construct(PromotionModel $promotionModel) {
+        $this->promotionModel = $promotionModel;
+        
+    }
     public function getDiscounts($request){
         $query =  Discount::query();
         $query->whereNull('deleted_at')->whereNull('deleted_by');
@@ -54,10 +59,15 @@ class DiscountModel extends Model
             $discount = Discount::whereNull('deleted_at')->whereNull('deleted_by')->where('code', $req['discount_code'])->where('active', 1)->where('start_date', '<=', Carbon::now('Asia/Ho_Chi_Minh'))->where('end_date', '>=', Carbon::now('Asia/Ho_Chi_Minh'))->first();
            
             if ($cart && $discount){
-                $cart->discount_code = $req['discount_code'];
-                $cart->discount_price = $req['discount_price'];
-                $cart->save();
-                return $cart;
+                $apply = $this->promotionModel->checkConditionDiscount($cart, $discount);
+                if ($apply){
+                    $cart->discount_code = $req['discount_code'];
+                    $cart->discount_price = $req['discount_price'];
+                    $cart->save();
+                    return $cart;
+                }
+                
+                return $apply;
             }
             return null;
         }else{

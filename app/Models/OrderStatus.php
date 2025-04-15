@@ -7,10 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 use App\Models\Order;
 use App\Models\Theme;
 
-class OrderDetail extends Model
+class OrderStatus extends Model
 {
     use HasFactory;
-    protected $table = 'order_details';
+    protected $table = 'order_status';
     protected $fillable = [
         'id',
         'order_id',
@@ -34,5 +34,7 @@ class OrderDetail extends Model
     public function order(){
         return $this->hasOne(Order::class, 'id', 'order_id');
     }
-  
+    public function status(){
+        return $this->hasOne(OrderStatus::class, 'id', 'order_id');
+    }
 }

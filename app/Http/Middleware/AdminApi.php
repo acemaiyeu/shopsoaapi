@@ -18,11 +18,13 @@ class AdminApi
         if (empty(auth()->user())){
             return response(["message" => "Bạn không có quyền truy cập api này"], 400);
         }
+        if ($request->route()->uri() === "api/v1/profile"){
+            return $next($request);
+        }   
         if (auth()->user()->role->code == "SUPERADMIN" || auth()->user()->role->code == "ADMIN"){
             return $next($request);
         }else{
             return response(["message" => "Bạn không có quyền truy cập api này"], 400);
         }
-        
     }
 }

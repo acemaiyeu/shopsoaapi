@@ -9,6 +9,7 @@ use App\Transformers\ThemeTransformer;
 use App\Transformers\ThemeAdminTransformer;
 use App\Models\ModelsQuery\ThemeModel;
 use App\Models\Telegram;
+use App\Models\Theme;
 
 class ThemeController extends Controller
 {
@@ -21,7 +22,7 @@ class ThemeController extends Controller
     }
     public function getThemes(Request $request)
     {
-        Telegram::sendMessage('Auto sendMessages from ThemeController');
+        
         $themes = $this->model->getThemes($request);
         return fractal($themes, new ThemeTransformer())->respond();
     }
@@ -30,5 +31,12 @@ class ThemeController extends Controller
         $themes = $this->model->getThemes($request);
         return fractal($themes, new ThemeAdminTransformer())->respond();
     }
-
+    public function getThemeDetail($code, Request $request){
+        $theme = Theme::whereNull('deleted_at')->where('code', $code)->first();
+        return fractal($theme, new ThemeTransformer())->respond();
+    }
+    public function save(Request $request){
+        $theme = $this->model->saveTheme($request);
+        return fractal($theme, new ThemeAdminTransformer())->respond();
+    }
 }

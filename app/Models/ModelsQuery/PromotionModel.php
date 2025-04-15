@@ -60,63 +60,24 @@ class PromotionModel extends Model
         //start Promotion Discount
         if ($cart->discount_code){
             $discount = Discount::whereNull('deleted_at')->where('code', $cart->discount_code)->with('conditions')->where('start_date', '<=', Carbon::now('Asia/Ho_Chi_Minh'))->where('end_date', '>=', Carbon::now('Asia/Ho_Chi_Minh'))->first();
-            if ($discount){
-                $apply = false;
-                if ($discount->condition_apply == "ALL"){
-                    foreach ($discount->conditions as $condition){
-                    if ($condition->type == "cart"){  
-                        if (!comparative($info_payment[0]['total_price'], $condition->condition_data->condition,$condition->condition_data->value)){
-                            $apply = true;
-                            break;
-                        }
-                    } 
-                    if ($condition->type == "theme_id"){  
-                        if (!in_array($condition->condition_data->value, array_column($cart->details, 'theme_id'))){
-                            $apply = true;
-                            break;
-                        }
-                    } 
+            $apply = $this->checkConditionDiscount($cart, $discount);
+            if ($apply){
+                $discount_total = 0;
+                if ($discount->discount_price > 0){
+                    $discount_total = $discount->discount_price;
                 }
-                }else{
-                    foreach ($discount->conditions as $condition){
-                        
-                        if ($condition->condition_apply== "cart"){  
-                            if ($this->comparative($info_payment[0]['total_price'], $condition->condition_data->condition,$condition->condition_data->value)){
-                                $apply = true;
-                                break;
-                            }
-                        } 
-                        if ($condition->condition_apply == "theme_id"){  
-                            if (in_array($condition->condition_data->value, array_column($cart->details, 'theme_id'))){
-                                $apply = true;
-                                break;
-                            }
-                        } 
-                    }
+            
+                if ($discount->discount_percent > 0){
+                    $discount_total = $info_payment[0]['total_price'] * round(($discount->discount_percent / 100),1);
                 }
-    
-                if ($apply){
-                    $discount_total = 0;
-                    if ($discount->discount_price > 0){
-                        $discount_total = $discount->discount_price;
-                    }
-                
-                    if ($discount->discount_percent > 0){
-                        $discount_total = $info_payment[0]['total_price'] * round(($discount->discount_percent / 100),1);
-                    }
-                    $cart->discount_code = $discount->code;
-                    // $cart->discount_name = $discount->name;
-                    $cart->discount_price = $discount_total;   
-                    $info_payment[count($info_payment)] = [
-                        "total_price" => $discount_total,
-                        "total_price_text" => "-" . number_format($discount_total,0,',','.') . " đ",
-                        "name_show" => $discount->name
-                    ];
-                }
-            }else{
-                $cart->discount_code = null;
-                // $cart->discount_name = null;
-                $cart->discount_price = 0;
+                $cart->discount_code = $discount->code;
+                // $cart->discount_name = $discount->name;
+                $cart->discount_price = $discount_total;   
+                $info_payment[count($info_payment)] = [
+                    "total_price" => $discount_total,
+                    "total_price_text" => "-" . number_format($discount_total,0,',','.') . " đ",
+                    "name_show" => $discount->name
+                ];
             }
         }
 
@@ -162,6 +123,51 @@ class PromotionModel extends Model
                dd($e);
             }
     }
+    public function checkConditionDiscount($cart, $discount){
+        $apply = false;
+        if ($discount){
+           
+            if ($discount->condition_apply == "ALL"){
+                foreach ($discount->conditions as $condition){
+                if ($condition->type == "cart"){  
+                    if (!comparative($cart->details->sum('total_price'), $condition->condition_data->condition,$condition->condition_data->value)){
+                        $apply = true;
+                        break;
+                    }
+                } 
+                if ($condition->type == "theme_id"){  
+                    if (!in_array($condition->condition_data->value, array_column($cart->details, 'theme_id'))){
+                        $apply = true;
+                        break;
+                    }
+                } 
+            }
+            }else{
+                foreach ($discount->conditions as $condition){
+                    
+                    if ($condition->condition_apply== "cart"){  
+                        if ($this->comparative($cart->details->sum('total_price'), $condition->condition_data->condition,$condition->condition_data->value)){
+                            $apply = true;
+                            break;
+                        }
+                    } 
+                    if ($condition->condition_apply == "theme_id"){  
+                        if (in_array($condition->condition_data->value, array_column($cart->details->toArray(), 'theme_id'))){
+                            $apply = true;
+                            break;
+                        }
+                    } 
+                }
+            }
+
+            
+        }else{
+            $cart->discount_code = null;
+            // $cart->discount_name = null;
+            $cart->discount_price = 0;
+        }
+                return $apply;
+            }
     public function comparative($value, $method, $value2){
             if ($method == "<"){
                 return $value < $value2;

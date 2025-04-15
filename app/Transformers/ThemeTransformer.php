@@ -14,6 +14,7 @@ class ThemeTransformer extends TransformerAbstract
         return [
             'id' => $theme->id,
             'title' => $theme->title,
+            'code' => $theme->code,
             'short_description' => $theme->short_description,
             'long_description' => $theme->long_description,
             'price' => $theme->price,
@@ -21,6 +22,10 @@ class ThemeTransformer extends TransformerAbstract
             'price_old' =>0,
             'price_old_text' => number_format(0, 0, ',', '.') . ' ₫',
             'framework' => $theme->framework,
+            'document' => $theme->document??"",
+            'img_slider' => $theme->img_slider,
+            'gifts'          => $theme->gifts,
+            'responsive' => $theme->responsive,
             // 'payment' => $theme->payment,
             // 'discount_code' => $theme->discount_code,
             // 'discount_price' => $theme->discount_price,

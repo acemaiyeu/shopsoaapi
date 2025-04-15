@@ -16,6 +16,7 @@ class ThemeModel extends Model
         if (!empty($request['id'])){
             $query->where('id', $request['id']);
         }
+        $query->with('gifts');
         $limit = $req['limit']??30;
         if ($limit == 1){
             return $query->first();
@@ -43,5 +44,23 @@ class ThemeModel extends Model
     //         return  ["status" => 500, "message" => $e];
     //     }
     // }
-   
+    public function saveTheme($request){
+        $theme = Theme::whereNull('deleted_at')->find($request['id']??0);
+        if (empty($theme)){
+            $theme = new Theme();
+        }
+        $theme->title = $request['title']??$theme->title;
+        $theme->thumbnail_img = $request['thumbnail_img']??$theme->thumbnail_img;
+        $theme->img_slider = $request['img_slider']??$theme->img_slider;
+        $theme->framework = $request['framework']??$theme->framework;
+        $theme->gift = $request['gift']??$theme->gift;
+        $theme->short_description = $request['short_description']??$theme->short_description;
+        $theme->file = $request['file']??$theme->file;
+        $theme->category_id = $request['category_id']??$theme->category_id;
+        $theme->long_description = $request['long_description']??$theme->long_description;
+        $theme->document = $request['document']??$theme->document; //Yêu cầu 
+         $theme->save();
+         return $theme;
+    }
+
 }

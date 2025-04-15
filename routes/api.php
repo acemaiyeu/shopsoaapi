@@ -49,6 +49,7 @@ Route::group([
 ], function($router){
             //Theme
         Route::get('/themes', [ThemeController::class, 'getThemes']);
+        Route::get('/theme/{code}', [ThemeController::class, 'getThemeDetail']);
         //Category
         Route::get('/categories', [CategoryController::class, 'getCategory']);
         Route::get('/category/{id}', [CategoryController::class, 'getDetail']);
@@ -87,6 +88,7 @@ Route::group([
 ], function($router){
     //Theme 
     Route::get('/themes', [ThemeController::class, 'getThemesAdmin']);
+    Route::post('/theme', [ThemeController::class, 'save']);
     //Category
     Route::post('/category', [CategoryController::class, 'create']);
     Route::put('/category', [CategoryController::class, 'update']);
@@ -98,6 +100,8 @@ Route::group([
     Route::post('/promotion', [PromotionController::class, 'create']);
 
     Route::get('/statistics-orders', [OrderController::class, 'statisticsOrders']);
+    
+    Route::get('/statistics-orders-fits', [OrderController::class, 'statisticsOrdersRevenue']);
     Route::get('/orders', [OrderController::class, 'getAllOrders']);
 
     //product
@@ -114,6 +118,7 @@ Route::group([
     Route::get('/order-detail/{id}', [OrderController::class, 'detailAdmin']);
     Route::put('/order-update', [OrderController::class, 'updateOrder']);
     Route::get('/order-status/{id}', [OrderController::class, 'getStatus']);
+    // Router::get('/orders', [OrderController::class, 'getAllOrders']);
 
     //Coupon (promocode)
     Route::get('/promocodes', [PromoCodeController::class, 'getPromoCode']);
