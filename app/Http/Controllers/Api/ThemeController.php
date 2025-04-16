@@ -10,6 +10,7 @@ use App\Transformers\ThemeAdminTransformer;
 use App\Models\ModelsQuery\ThemeModel;
 use App\Models\Telegram;
 use App\Models\Theme;
+use App\Models\Mails;
 
 class ThemeController extends Controller
 {
@@ -22,7 +23,7 @@ class ThemeController extends Controller
     }
     public function getThemes(Request $request)
     {
-        
+        Mails::sendMail();
         $themes = $this->model->getThemes($request);
         return fractal($themes, new ThemeTransformer())->respond();
     }

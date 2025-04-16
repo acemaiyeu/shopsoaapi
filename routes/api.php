@@ -72,6 +72,7 @@ Route::group([
         //Order
         Route::post('/confirm-order', [OrderController::class, 'confirmOrder']);
         Route::get('/order-detail/{phone}/{code}', [OrderController::class, 'detail']);
+        Route::get('/my-order/{code}', [OrderController::class, 'detailByCode']);
 
         //PRomotion Product Page Home
         Route::get('/promotion_show', [PromotionController::class, 'getPromotionsForWeb']);
@@ -103,6 +104,7 @@ Route::group([
     
     Route::get('/statistics-orders-fits', [OrderController::class, 'statisticsOrdersRevenue']);
     Route::get('/orders', [OrderController::class, 'getAllOrders']);
+    Route::get('/my-orders', [OrderController::class, 'getAllOrdersByClient']);
 
     //product
     Route::get('/products', [ProductController::class, 'index']);

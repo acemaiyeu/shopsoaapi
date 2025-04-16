@@ -52,6 +52,7 @@ class OrderModel extends Model
         }
         
         $query->orderBy("created_at",'desc');
+        
         $limit = $request['limit'] ?? 10;
         if ($limit == 1){
             return $query->first();
@@ -102,7 +103,7 @@ class OrderModel extends Model
                     // $order->discount_price_text = number_format($detail->discount_price,0,',','.') . " đ";
                     // $detail_order->discount_code = $detail->discount_code??"";
                     $detail_order->total_price = $detail->total_price;
-                    $detail_order->total_price_text = number_format($detail->total,0,',','.') . " đ";
+                    $detail_order->total_price_text = number_format($detail->total_price,0,',','.') . " đ";
                     $detail_order->save();
                     $detail->deleted_at = $date;
                     $detail->save();

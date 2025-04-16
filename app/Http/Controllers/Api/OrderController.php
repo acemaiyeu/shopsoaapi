@@ -9,6 +9,7 @@ use App\Models\ModelsQuery\OrderModel;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use App\Transformers\OrderTransformer;
+use App\Transformers\OrderClientTransformer;
 use App\Http\Requests\confirmOrderValidate;
 use App\Models\User;
 
@@ -47,6 +48,16 @@ class OrderController extends Controller
             $orders = $this->orderModel->getAllOrders($request);
             return fractal($orders, new OrderTransformer())->respond();
     }
+    public function getAllOrdersByClient(Request $request){
+        if (empty(auth()->user())){
+            return response(['message' => "Vui lòng đăng nhập"],400);
+        }
+        $request['user_id'] = auth()->user()->id;
+        $orders = $this->orderModel->getAllOrders($request);
+        return fractal($orders, new OrderClientTransformer())->respond();
+}
+
+    
     public function confirmOrder(confirmOrderValidate $req){
         // $data = $request->validated();
         
@@ -92,5 +103,16 @@ class OrderController extends Controller
         }
         return response(["message" => ["status" => $order->status, "status_text" => $order->status_text], 200]);
     }
+    public function detailByCode(Request $req, $code){
+        $req['limit'] = 1;
+        $req['code'] = $code;
+        $order =  $this->orderModel->getAllOrders($req);
+        if (!empty($order['status_code'])){
+            return response($order['message'],400);
+           }
+        //    return $order;
+            return fractal($order, new OrderClientTransformer())->respond();
+    }
+    
     
 }

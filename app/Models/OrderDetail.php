@@ -29,7 +29,7 @@ class OrderDetail extends Model
     //     return $this->hasMany(Cart::class)->with("user")->select('cart_id','product_id','qty','price','total','total_text');
     // }
     public function theme(){
-        return $this->hasOne(Theme::class, 'id', 'theme_id')->select('id','code','title');
+        return $this->hasOne(Theme::class, 'id', 'theme_id')->select('id','code','title','thumbnail_img');
     }
     public function order(){
         return $this->hasOne(Order::class, 'id', 'order_id');
