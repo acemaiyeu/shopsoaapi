@@ -81,9 +81,10 @@ class UserController extends Controller
             $session = SessionLogin::where('device', $userAgent)->whereNull('deleted_at')->first();
             if ($session){
                 $session = $session->session_id;
+                $status_code = 200;
             }
             
-            $status_code = 200;
+            
         }
         return ["data"=> ["session_id" => $session, "status_code" => $status_code]];
     }

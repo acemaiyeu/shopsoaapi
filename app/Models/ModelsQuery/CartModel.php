@@ -51,7 +51,9 @@ class CartModel extends Model
 
                     if (!empty(auth()->user())){
                         $cart->user_id = auth()->user()->id;
-                        $cart->phone_number = auth()->user()->phone;
+                        $cart->fullname = auth()->user()->fullname??"";
+                        $cart->user_phone = auth()->user()->phone??"";
+                        $cart->user_email = auth()->user()->email??"";
                     }
                 }
             }
