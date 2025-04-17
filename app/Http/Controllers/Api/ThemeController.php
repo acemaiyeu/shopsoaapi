@@ -23,7 +23,7 @@ class ThemeController extends Controller
     }
     public function getThemes(Request $request)
     {
-        Mails::sendMail();
+        // Mails::sendMail();
         $themes = $this->model->getThemes($request);
         return fractal($themes, new ThemeTransformer())->respond();
     }

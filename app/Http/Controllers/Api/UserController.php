@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\SessionLogin;
 use App\Transformers\userTransformer;
 use App\Models\ModelsQuery\UserModel;
+use App\Models\User;
 
 class UserController extends Controller
 {
@@ -32,6 +33,17 @@ class UserController extends Controller
        $user = auth()->user();
        return fractal($user, new userTransformer())->respond();
         
+    }
+    public function updateProfile(Request $request){
+        $user = auth()->user();
+        if (!User::whereNull('deleted_at')->where('email', $request->email)->where('phone', $request->phone)->where('id', '!=', $user->id)->exists()){
+        $user->fullname = $request->fullname;
+        $user->phone = $request->phone;
+        $user->save();
+        }else{
+                return response()->json(['message' => 'Email hoặc số điện thoại đã tồn tại'], 422);
+        }
+        return fractal($user, new userTransformer())->respond();
     }
 
     /**

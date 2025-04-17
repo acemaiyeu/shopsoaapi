@@ -27,16 +27,16 @@ class CartController extends Controller
                 if (empty($cart->user_id) && !empty(auth()->user()->id)){
                     $cart->user_id = auth()->user()->id;
                 }
-                if (empty($cart->user_name) && !empty(auth()->user()->name)){
-                    $cart->user_name = auth()->user()->name;
+                if (empty($cart->fullname) && !empty(auth()->user()->fullname)){
+                    $cart->fullname = auth()->user()->fullname;
                 }
-                if (empty($cart->phone_number) && !empty($cart->user->phone)){
-                    $cart->phone_number = $cart->user->phone;
+                if (empty($cart->user_phone) && !empty($cart->user->phone)){
+                    $cart->user_phone = $cart->user->phone;
                 }
-                if (empty($cart->address) && !empty($cart->user->address)){
-                    $cart->address = $cart->user->address;
+                if (empty($cart->user_email) && !empty($cart->user->email)){
+                    $cart->user_email = $cart->user->email;
                 }
-                
+                    
                 $cart->save();
                 if (!empty($cart->address)){
                     $array_address = explode(",",$cart->address);

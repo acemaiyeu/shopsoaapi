@@ -115,6 +115,7 @@ Route::group([
     Route::get('/product-varian/{id}', [ProductVarianController::class, 'getAllByProduct']);
     Route::post('/product-varian', [ProductVarianController::class, 'update']);
     Route::get('/profile', [UserController::class, 'profile']);
+    Route::put('/profile', [UserController::class, 'updateProfile']);
 
     //Order
     Route::get('/order-detail/{id}', [OrderController::class, 'detailAdmin']);

@@ -40,15 +40,18 @@ class AuthController extends Controller
         return $this->respondWithToken($token);
     }
     public function register(Request $req){
-        $user = User::where('email',$req->email)->exists();
+        $user = User::where('email',$req->email)->where('phone', $req->phone)->exists();
         if (!$user){
             $user = User::create([
                 'fullname' => $req->fullname,
+                'phone' => $req->phone,
                 'email' => $req->email,
                 'password' => bcrypt($req->password)
             ]);
             $token = auth()->login($user);
             return $this->respondWithToken($token);
+        }else{
+            return response()->json(['message' => 'Email hoặc số điện thoại đã tồn tại'], 422);
         }
     }
 
