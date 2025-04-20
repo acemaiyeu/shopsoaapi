@@ -14,6 +14,7 @@ class ThemeAdminTransformer extends TransformerAbstract
         return [
             'id' => $theme->id,
             'thumbnail_img' => $theme->thumbnail_img,
+            'code' => $theme->code,
             'title' => $theme->title,
             'short_description' => $theme->short_description,
             'long_description' => $theme->long_description,
@@ -25,6 +26,9 @@ class ThemeAdminTransformer extends TransformerAbstract
             'type' => $theme->type,
             "document" => $theme->document,
             'file' => $theme->file,
+            'slider' => $theme->img_slider?json_decode($theme->img_slider):[],
+            'category_id' => $theme->category_id,
+            'gift'  => $theme->gift,
             // 'payment' => $theme->payment,
             // 'discount_code' => $theme->discount_code,
             // 'discount_price' => $theme->discount_price,

@@ -14,6 +14,9 @@ use App\Http\Controllers\Api\WarehouseController;
 use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\ThemeController;
 use App\Http\Controllers\Api\DiscountController;
+use App\Http\Controllers\Api\ImgurController;
+use App\Http\Controllers\Api\ImageProxyController;
+use App\Http\Controllers\Api\GiftController;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -92,6 +95,7 @@ Route::group([
     //Theme 
     Route::get('/themes', [ThemeController::class, 'getThemesAdmin']);
     Route::post('/theme', [ThemeController::class, 'save']);
+    Route::delete('/theme/{id}', [ThemeController::class, 'deleteById']);
     //Category
     Route::post('/category', [CategoryController::class, 'create']);
     Route::put('/category', [CategoryController::class, 'update']);
@@ -143,6 +147,13 @@ Route::group([
 
     Route::post('/warehouse', [WarehouseController::class, 'saveWarehouse']);
 
+
+    Route::post('/upload-image', [ImgurController::class, 'uploadImage']);
+    Route::get('/proxy-image', [ImageProxyController::class, 'fetchImage']);
+
+
+    //Gift
+    Route::get('/gifts', [GiftController::class, 'getGift']);
     
 });
 // Route::group(['prefix' => 'v0'])->get('/products', [ProductController::class, 'index']);

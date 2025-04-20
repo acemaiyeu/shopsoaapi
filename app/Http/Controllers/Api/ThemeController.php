@@ -11,7 +11,7 @@ use App\Models\ModelsQuery\ThemeModel;
 use App\Models\Telegram;
 use App\Models\Theme;
 use App\Models\Mails;
-
+use Carbon\Carbon;
 class ThemeController extends Controller
 {
     /**
@@ -39,5 +39,10 @@ class ThemeController extends Controller
     public function save(Request $request){
         $theme = $this->model->saveTheme($request);
         return fractal($theme, new ThemeAdminTransformer())->respond();
+    }
+    public function deleteById($id){ 
+        Theme::where('id', $id)->update(['deleted_at' => Carbon::now('Asia/Ho_Chi_Minh'), 'deleted_by' => auth()->user()->id]);
+       
+        return response()->json(['status' => 'success'], 200);
     }
 }

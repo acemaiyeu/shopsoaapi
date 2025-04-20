@@ -16,8 +16,11 @@ class ThemeModel extends Model
         if (!empty($request['id'])){
             $query->where('id', $request['id']);
         }
+        if (!empty($request['title'])){
+            $query->where('title', 'like', "%". $request['title'] . "%");
+        }
         $query->with('gifts');
-        $limit = $req['limit']??30;
+        $limit = $request['limit']??30;
         if ($limit == 1){
             return $query->first();
         }
@@ -48,10 +51,12 @@ class ThemeModel extends Model
         $theme = Theme::whereNull('deleted_at')->find($request['id']??0);
         if (empty($theme)){
             $theme = new Theme();
+            $theme->created_by = auth()->user()->id;
         }
+        $theme->code = $request['code']??$theme->code;
         $theme->title = $request['title']??$theme->title;
         $theme->thumbnail_img = $request['thumbnail_img']??$theme->thumbnail_img;
-        $theme->img_slider = $request['img_slider']??$theme->img_slider;
+        $theme->img_slider = !empty($request['slider'])? json_encode($request['slider']): $theme->img_slider;
         $theme->framework = $request['framework']??$theme->framework;
         $theme->gift = $request['gift']??$theme->gift;
         $theme->short_description = $request['short_description']??$theme->short_description;
@@ -59,8 +64,10 @@ class ThemeModel extends Model
         $theme->category_id = $request['category_id']??$theme->category_id;
         $theme->long_description = $request['long_description']??$theme->long_description;
         $theme->document = $request['document']??$theme->document; //Yêu cầu 
-         $theme->save();
-         return $theme;
+        $theme->price = $request['price']??$theme->price; //Yêu cầu 
+        $theme->price_text = Number_format($theme->price, 0, ',', '.') . ' ₫';
+        $theme->save();
+        return $theme;
     }
 
 }
