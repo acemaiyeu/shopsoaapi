@@ -18,7 +18,7 @@ class AdminApi
         if (empty(auth()->user())){
             return response(["message" => "Bạn không có quyền truy cập api này"], 400);
         }
-        if ($request->route()->uri() === "api/v1/profile" || $request->route()->uri() === "api/v1/my-orders"){
+        if ($request->route()->uri() === "api/v1/profile" || $request->route()->uri() === "api/v1/my-orders" || $request->route()->uri() === "api/v1/change-password"){
             return $next($request);
         }   
         if (auth()->user()->role->code == "SUPERADMIN" || auth()->user()->role->code == "ADMIN"){

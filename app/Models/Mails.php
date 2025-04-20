@@ -9,13 +9,15 @@ use App\Mail\SampleMail;
 
 class Mails
 {
-    public static function sendMail()
+    public static function sendMail($to, $content, $title)
     {
         $data = [
-            'message' => 'Đây là nội dung email từ Laravel'
+            'message' => $content,
+            'title' =>  $title,
+            'subject' => $title . " Từ Theme For Student"
         ];
     
-        Mail::to('nthanhhuy11a2@gmail.com')->send(new SampleMail($data));
+        Mail::to($to)->send(new SampleMail($data));
     
         return 'Đã gửi mail!';
     }

@@ -40,6 +40,8 @@ Route::group([
     Route::post('refresh', 'AuthController@refresh');
     Route::get('profile', [AuthController::class, 'profile']);
     Route::post('profile', [AuthController::class, 'updateProfile']);
+    Route::post('forgot', [AuthController::class, 'forGotPassword']);
+    Route::get('forgot/active/{password}', [AuthController::class, 'activePassword']);
 
 });
 
@@ -114,9 +116,11 @@ Route::group([
     //Product varian
     Route::get('/product-varian/{id}', [ProductVarianController::class, 'getAllByProduct']);
     Route::post('/product-varian', [ProductVarianController::class, 'update']);
+
+    //Profile
     Route::get('/profile', [UserController::class, 'profile']);
     Route::put('/profile', [UserController::class, 'updateProfile']);
-
+    Route::put('/change-password', [UserController::class, 'changePassword']);
     //Order
     Route::get('/order-detail/{id}', [OrderController::class, 'detailAdmin']);
     Route::put('/order-update', [OrderController::class, 'updateOrder']);
@@ -138,6 +142,7 @@ Route::group([
 
 
     Route::post('/warehouse', [WarehouseController::class, 'saveWarehouse']);
+
     
 });
 // Route::group(['prefix' => 'v0'])->get('/products', [ProductController::class, 'index']);
