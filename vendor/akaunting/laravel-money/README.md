@@ -3,10 +3,9 @@
 ![Downloads](https://img.shields.io/packagist/dt/akaunting/laravel-money)
 ![Tests](https://img.shields.io/github/actions/workflow/status/akaunting/laravel-money/tests.yml?label=tests)
 [![StyleCI](https://github.styleci.io/repos/112121508/shield?style=flat&branch=master)](https://styleci.io/repos/112121508)
-[![Check Imports](https://github.com/akaunting/laravel-money/actions/workflows/check_imports.yml/badge.svg?branch=master)](https://github.com/akaunting/laravel-money/actions/workflows/check_imports.yml)
 [![License](https://img.shields.io/github/license/akaunting/laravel-money)](LICENSE.md)
 
-This package intends to provide tools for formatting and conversion of monetary values in an easy, yet powerful way for Laravel projects.
+This package intends to provide tools for formatting and conversion monetary values in an easy, yet powerful way for Laravel projects.
 
 ### Why not use the `moneyphp` package?
 
@@ -60,7 +59,7 @@ $m1->greaterThan($m2);
 $m1->greaterThanOrEqual($m2);
 $m1->lessThan($m2);
 $m1->lessThanOrEqual($m2);
-$m1->convert(Currency::GBP(), 3.5);
+$m1->convert(Currency::GBP, 3.5);
 $m1->add($m2);
 $m1->subtract($m2);
 $m1->multiply(2);
@@ -75,7 +74,6 @@ $m1->format();
 ### Helpers
 
 ```php
-money(500)
 money(500, 'USD')
 currency('USD')
 ```
@@ -83,7 +81,6 @@ currency('USD')
 ### Blade Directives
 
 ```php
-@money(500)
 @money(500, 'USD')
 @currency('USD')
 ```
@@ -93,83 +90,11 @@ currency('USD')
 Same as the directive, there is also a `blade` component for you to create money and currency in your views:
 
 ```html
-<x-money amount="500" />
-or
 <x-money amount="500" currency="USD" />
 or
 <x-money amount="500" currency="USD" convert />
 
 <x-currency currency="USD" />
-```
-
-### Macros
-
-This package implements the Laravel `Macroable` trait, allowing macros and mixins on both `Money` and `Currency`.
-
-Example use case:
-
-```php
-use Akaunting\Money\Currency;
-use Akaunting\Money\Money;
-
-Money::macro(
-    'absolute',
-    fn () => $this->isPositive() ? $this : $this->multiply(-1)
-);
-
-$money = Money::USD(1000)->multiply(-1);
-
-$absolute = $money->absolute();
-```
-
-Macros can be called statically too:
-
-```php
-use Akaunting\Money\Currency;
-use Akaunting\Money\Money;
-
-Money::macro('zero', fn (?string $currency = null) => new Money(0, new Currency($currency ?? 'GBP')));
-
-$money = Money::zero();
-```
-
-### Mixins
-
-Along with Macros, Mixins are also supported. This allows merging another classes methods into the Money or Currency class.
-
-Define the mixin class:
-
-```php
-use Akaunting\Money\Money;
-
-class CustomMoney 
-{
-    public function absolute(): Money
-    {
-        return $this->isPositive() ? $this : $this->multiply(-1);
-    }
-    
-    public static function zero(?string $currency = null): Money
-    {
-        return new Money(0, new Currency($currency ?? 'GBP'));
-    }
-}
-```
-
-Register the mixin, by passing an instance of the class:
-
-```php
-Money::mixin(new CustomMoney);
-```
-
-The methods from the custom class will be available:
-
-```php
-$money = Money::USD(1000)->multiply(-1);
-$absolute = $money->absolute();
-
-// Static methods via mixins are supported too:
-$money = Money::zero();
 ```
 
 ## Changelog

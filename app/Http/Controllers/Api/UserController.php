@@ -8,6 +8,7 @@ use App\Models\SessionLogin;
 use App\Transformers\userTransformer;
 use App\Models\ModelsQuery\UserModel;
 use App\Models\User;
+use App\Http\Requests\changePasswordValidator;
 
 class UserController extends Controller
 {
@@ -111,5 +112,19 @@ class UserController extends Controller
         }
         $session->save();
         return ['status' => 200];
+    }
+    public function changePassword(changePasswordValidator $request){
+            if (!empty(auth()->user())){
+                if (password_verify($request['password'], auth()->user()->password)) {
+                    $user = auth()->user();
+                    $user->password = password_hash($request['new_password'], PASSWORD_DEFAULT);
+                    $user->save();
+                    return response()->json(['message' => "Bạn đã đổi mật khẩu thành công"], 200);
+                } else {
+                   return response()->json(['error' => ['message' => "Sai mật khẩu"]], 400);
+                }
+            }else{
+                return response()->json(['error' => ['message' => "Vui lòng đăng nhập để đổi mật khẩu"]], 400);
+            }
     }
 }
