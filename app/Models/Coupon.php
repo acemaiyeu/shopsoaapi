@@ -2,15 +2,17 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use App\Models\CartDetail;
 use App\Models\User;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 
-class PromoCode extends Model
+class Coupon extends Model
 {
     use HasFactory;
-    protected $table = 'promo_codes';
+
+    protected $table = 'coupons';
+
     protected $fillable = [
         'id',
         'name',
@@ -25,5 +27,13 @@ class PromoCode extends Model
         'deleted_at',
         'deleted_by'
     ];
-    
+
+    protected $casts = [
+        'data' => 'object'
+    ];
+
+    public function conditions()
+    {
+        return $this->hasMany(CouponCondition::class, 'coupon_id', 'id');
+    }
 }

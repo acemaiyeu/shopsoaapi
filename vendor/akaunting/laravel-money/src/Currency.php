@@ -179,14 +179,11 @@ use OutOfBoundsException;
  * @method static Currency ZAR()
  * @method static Currency ZMW()
  * @method static Currency ZWL()
- * @template-implements Arrayable<string,array>
  */
 class Currency implements Arrayable, Castable, Jsonable, JsonSerializable, Renderable
 {
-    use Macroable {
-        __callStatic as protected macroableCallStatic;
-    }
-
+    use Macroable;
+    
     protected string $currency;
 
     protected string $name;
@@ -236,15 +233,8 @@ class Currency implements Arrayable, Castable, Jsonable, JsonSerializable, Rende
         $this->thousandsSeparator = (string) $attributes['thousands_separator'];
     }
 
-    /**
-     * @psalm-suppress MixedInferredReturnType,MixedReturnStatement
-     */
     public static function __callStatic(string $method, array $arguments): Currency
     {
-        if (static::hasMacro($method)) {
-            return static::macroableCallStatic($method, $arguments);
-        }
-
         return new self($method);
     }
 
@@ -263,9 +253,7 @@ class Currency implements Arrayable, Castable, Jsonable, JsonSerializable, Rende
 
     public static function getCurrencies(): array
     {
-        $config = require __DIR__ . '/../config/money.php';
-
-        return static::$currencies ??= $config['currencies'];
+        return static::$currencies ??= require __DIR__ . '/../config/money.php';
     }
 
     public function equals(Currency $currency): bool
