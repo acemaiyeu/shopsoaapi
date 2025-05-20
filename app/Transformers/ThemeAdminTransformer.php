@@ -2,13 +2,12 @@
 
 namespace App\Transformers;
 
-use League\Fractal\TransformerAbstract;
 use App\Models\theme;
 use Carbon\Carbon;
+use League\Fractal\TransformerAbstract;
 
 class ThemeAdminTransformer extends TransformerAbstract
 {
-    
     public function transform(Theme $theme)
     {
         return [
@@ -20,15 +19,18 @@ class ThemeAdminTransformer extends TransformerAbstract
             'long_description' => $theme->long_description,
             'price' => $theme->price,
             'price_text' => number_format($theme->price, 0, ',', '.') . ' ₫',
-            'price_old' =>0,
+            'price_old' => 0,
             'price_old_text' => number_format(0, 0, ',', '.') . ' ₫',
             'framework' => $theme->framework,
             'type' => $theme->type,
-            "document" => $theme->document,
+            'document' => $theme->document,
             'file' => $theme->file,
-            'slider' => $theme->img_slider?json_decode($theme->img_slider):[],
+            'slider' => $theme->img_slider ? json_decode($theme->img_slider) : [],
             'category_id' => $theme->category_id,
-            'gift'  => $theme->gift,
+            'gift' => $theme->gift,
+            'link_youtube_demo' => $theme->link_youtube_demo ?? '',
+            'thumbnail_img' => $theme->thumbnail_img,
+            'responsive' => $theme->responsive,
             // 'payment' => $theme->payment,
             // 'discount_code' => $theme->discount_code,
             // 'discount_price' => $theme->discount_price,
@@ -45,7 +47,7 @@ class ThemeAdminTransformer extends TransformerAbstract
             // 'gifts' => json_decode($theme->gifts),
             // // 'gifts' => [],
             // 'total_pay' => $theme->total_pay,
-            'created_at'  => $theme->created_at,
+            'created_at' => $theme->created_at,
         ];
     }
 }

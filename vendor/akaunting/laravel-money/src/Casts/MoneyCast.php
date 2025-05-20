@@ -7,6 +7,9 @@ use Akaunting\Money\Money;
 use Illuminate\Contracts\Database\Eloquent\CastsAttributes;
 use UnexpectedValueException;
 
+/**
+ * @template-implements CastsAttributes<Money,Money>
+ */
 class MoneyCast implements CastsAttributes
 {
     public function get($model, string $key, $value, array $attributes): Money
@@ -15,16 +18,16 @@ class MoneyCast implements CastsAttributes
             throw new UnexpectedValueException;
         }
 
-        /** @var null|array{amount:mixed, currency:string} $value */
-        $value = json_decode($value, true);
+        /** @var null|array{amount:mixed, currency:string} $extractedValue */
+        $extractedValue = json_decode($value, true);
 
-        if (! is_array($value) || ! isset($value['amount']) || ! isset($value['currency'])) {
+        if (! is_array($extractedValue) || ! isset($extractedValue['amount']) || ! isset($extractedValue['currency'])) {
             throw new UnexpectedValueException;
         }
 
         return new Money(
-            $value['amount'],
-            new Currency($value['currency'])
+            $extractedValue['amount'],
+            new Currency($extractedValue['currency'])
         );
     }
 
@@ -34,7 +37,7 @@ class MoneyCast implements CastsAttributes
             throw new UnexpectedValueException;
         }
 
-        return json_encode([
+        return (string) json_encode([
             'amount' => $value->getAmount(),
             'currency' => $value->getCurrency()->getCurrency(),
         ]);

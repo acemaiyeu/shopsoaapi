@@ -2,17 +2,19 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Model;
 use App\Models\Cart;
 use App\Models\Product;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 
 class CartDetail extends Model
 {
     use HasFactory;
     use SoftDeletes;
+
     protected $table = 'cart_details';
+
     protected $fillable = [
         'id',
         'cart_id',
@@ -31,15 +33,18 @@ class CartDetail extends Model
         'deleted_by'
     ];
 
-
-
-    public function cart(){
+    public function cart()
+    {
         return $this->belongsTo(Cart::class);
     }
-    public function theme(){
-        return $this->belongsTo(Theme::class)->select('id','title','thumbnail_img','short_description','price','price_text');
+
+    public function theme()
+    {
+        return $this->belongsTo(Theme::class)->select('id', 'title', 'thumbnail_img', 'short_description', 'price', 'price_text');
     }
-    public function productShort(){
-        return $this->belongsTo(Product::class)->select('id','code','name','price','price_text');
+
+    public function productShort()
+    {
+        return $this->belongsTo(Product::class)->select('id', 'code', 'name', 'price', 'price_text');
     }
 }

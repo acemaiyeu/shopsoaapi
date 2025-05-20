@@ -183,10 +183,13 @@ use OutOfBoundsException;
  * @method static Money ZAR(mixed $amount, bool $convert = false)
  * @method static Money ZMW(mixed $amount, bool $convert = false)
  * @method static Money ZWL(mixed $amount, bool $convert = false)
+ * @template-implements Arrayable<string,int|float|Currency>
  */
 class Money implements Arrayable, Castable, Jsonable, JsonSerializable, Renderable
 {
-    use Macroable;
+    use Macroable {
+        __callStatic as protected macroableCallStatic;
+    }
 
     const ROUND_HALF_UP = PHP_ROUND_HALF_UP;
 
@@ -242,7 +245,7 @@ class Money implements Arrayable, Castable, Jsonable, JsonSerializable, Renderab
 
     protected function parseAmountFromCallable(mixed $amount): mixed
     {
-        if (!is_callable($amount)) {
+        if (! is_callable($amount)) {
             return $amount;
         }
 
@@ -251,7 +254,7 @@ class Money implements Arrayable, Castable, Jsonable, JsonSerializable, Renderab
 
     protected function parseAmountFromString(mixed $amount): mixed
     {
-        if (!is_string($amount)) {
+        if (! is_string($amount)) {
             return $amount;
         }
 
@@ -259,7 +262,7 @@ class Money implements Arrayable, Castable, Jsonable, JsonSerializable, Renderab
         $decimalMark = $this->currency->getDecimalMark();
 
         $amount = str_replace($this->currency->getSymbol(), '', $amount);
-        $amount = preg_replace('/[^\d\\' . $thousandsSeparator . '\\' . $decimalMark . '\-\+]/', '', $amount);
+        $amount = (string) preg_replace('/[^\d\\' . $thousandsSeparator . '\\' . $decimalMark . '\-\+]/', '', $amount);
         $amount = str_replace($this->currency->getThousandsSeparator(), '', $amount);
         $amount = str_replace($this->currency->getDecimalMark(), '.', $amount);
 
@@ -274,15 +277,22 @@ class Money implements Arrayable, Castable, Jsonable, JsonSerializable, Renderab
 
     protected function convertAmount(int|float $amount, bool $convert = false): int|float
     {
-        if (!$convert) {
+        if (! $convert) {
             return $amount;
         }
 
         return $amount * $this->currency->getSubunit();
     }
 
+    /**
+     * @psalm-suppress MixedInferredReturnType,MixedReturnStatement
+     */
     public static function __callStatic(string $method, array $arguments): Money
     {
+        if (static::hasMacro($method)) {
+            return static::macroableCallStatic($method, $arguments);
+        }
+
         $convert = isset($arguments[1]) && is_bool($arguments[1]) && $arguments[1];
 
         return new self($arguments[0], new Currency($method), $convert);
@@ -319,7 +329,7 @@ class Money implements Arrayable, Castable, Jsonable, JsonSerializable, Renderab
      */
     protected function assertSameCurrency(Money $other): void
     {
-        if (!$this->isSameCurrency($other)) {
+        if (! $this->isSameCurrency($other)) {
             throw new InvalidArgumentException('Different currencies "' . $this->currency . '" and "' . $other->currency . '"');
         }
     }
@@ -597,7 +607,7 @@ class Money implements Arrayable, Castable, Jsonable, JsonSerializable, Renderab
         $prefix = $this->currency->getPrefix();
         $suffix = $this->currency->getSuffix();
 
-        $formatter = new \NumberFormatter($locale ?: static::getLocale(), \NumberFormatter::PADDING_POSITION);
+        $formatter = new \NumberFormatter(is_null($locale) ? static::getLocale() : $locale, \NumberFormatter::PADDING_POSITION);
 
         $formatter->setSymbol(\NumberFormatter::DECIMAL_SEPARATOR_SYMBOL, $this->currency->getDecimalMark());
         $formatter->setSymbol(\NumberFormatter::GROUPING_SEPARATOR_SYMBOL, $this->currency->getThousandsSeparator());
@@ -623,7 +633,7 @@ class Money implements Arrayable, Castable, Jsonable, JsonSerializable, Renderab
         }
         // @codeCoverageIgnoreEnd
 
-        $formatter = new \NumberFormatter($locale ?: static::getLocale(), \NumberFormatter::CURRENCY);
+        $formatter = new \NumberFormatter(is_null($locale) ? static::getLocale() : $locale, \NumberFormatter::CURRENCY);
 
         $formatter->setSymbol(\NumberFormatter::DECIMAL_SEPARATOR_SYMBOL, $this->currency->getDecimalMark());
         $formatter->setSymbol(\NumberFormatter::GROUPING_SEPARATOR_SYMBOL, $this->currency->getThousandsSeparator());
@@ -647,10 +657,10 @@ class Money implements Arrayable, Castable, Jsonable, JsonSerializable, Renderab
 
     public function toJson($options = 0): string
     {
-        return json_encode($this->toArray(), $options);
+        return (string) json_encode($this->toArray(), $options);
     }
 
-    public function jsonSerialize(): array
+    public function jsonSerialize(): mixed
     {
         return $this->toArray();
     }

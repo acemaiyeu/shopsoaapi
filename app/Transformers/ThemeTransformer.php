@@ -2,13 +2,12 @@
 
 namespace App\Transformers;
 
-use League\Fractal\TransformerAbstract;
 use App\Models\theme;
 use Carbon\Carbon;
+use League\Fractal\TransformerAbstract;
 
 class ThemeTransformer extends TransformerAbstract
 {
-    
     public function transform(Theme $theme)
     {
         return [
@@ -19,13 +18,15 @@ class ThemeTransformer extends TransformerAbstract
             'long_description' => $theme->long_description,
             'price' => $theme->price,
             'price_text' => number_format($theme->price, 0, ',', '.') . ' ₫',
-            'price_old' =>0,
+            'price_old' => 0,
             'price_old_text' => number_format(0, 0, ',', '.') . ' ₫',
             'framework' => $theme->framework,
-            'document' => $theme->document??"",
+            'document' => $theme->document ?? '',
             'img_slider' => $theme->img_slider,
-            'gifts'          => $theme->gifts,
+            'gifts' => $theme->gifts,
             'responsive' => $theme->responsive,
+            'link_youtube_demo' => $theme->link_youtube_demo ?? '',
+            'thumbnail_img' => $theme->thumbnail_img,
             // 'payment' => $theme->payment,
             // 'discount_code' => $theme->discount_code,
             // 'discount_price' => $theme->discount_price,
@@ -42,7 +43,7 @@ class ThemeTransformer extends TransformerAbstract
             // 'gifts' => json_decode($theme->gifts),
             // // 'gifts' => [],
             // 'total_pay' => $theme->total_pay,
-            'created_at'  => $theme->created_at,
+            'created_at' => $theme->created_at,
         ];
     }
 }

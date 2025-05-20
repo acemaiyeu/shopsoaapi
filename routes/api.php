@@ -15,6 +15,7 @@ use App\Http\Controllers\Api\ThemeController;
 use App\Http\Controllers\Api\UserController;
 use App\Http\Controllers\Api\WarehouseController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ImageUploadController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -54,7 +55,7 @@ Route::group([
     Route::get('/theme/{code}', [ThemeController::class, 'getThemeDetail']);
     // Category
     Route::get('/categories', [CategoryController::class, 'getCategory']);
-    Route::get('/category/{id}', [CategoryController::class, 'getDetail']);
+    // Route::get('/category/{id}', [CategoryController::class, 'getDetail']);
     // session
     Route::get('/sessions', [UserController::class, 'getSession']);
     Route::post('/sessions', [UserController::class, 'addSession']);
@@ -96,6 +97,7 @@ Route::group([
     Route::post('/category', [CategoryController::class, 'create']);
     Route::put('/category', [CategoryController::class, 'update']);
     Route::delete('/category/{id}', [CategoryController::class, 'deleteCategory']);
+    Route::get('/category/{code}', [CategoryController::class, 'getDetailByCode']);
     // Promotion
     Route::get('/promotions', [PromotionController::class, 'getPromotions']);
     Route::get('/promotion-products', [PromotionController::class, 'getProductPromotions']);
@@ -136,10 +138,14 @@ Route::group([
 
     Route::post('/warehouse', [WarehouseController::class, 'saveWarehouse']);
 
-    Route::post('/upload-image', [ImgurController::class, 'uploadImage']);
+    // Route::post('/upload-image', [ImgurController::class, 'uploadImage']);
     Route::get('/proxy-image', [ImageProxyController::class, 'fetchImage']);
+    Route::post('/upload-image', [ImageUploadController::class, 'upload']);
 
     // Gift
     Route::get('/gifts', [GiftController::class, 'getGift']);
+    Route::get('/gift/{id}', [GiftController::class, 'detail']);
+    Route::post('/gift', [GiftController::class, 'create']);
+    Route::put('/gift', [GiftController::class, 'update']);
 });
 // Route::group(['prefix' => 'v0'])->get('/products', [ProductController::class, 'index']);

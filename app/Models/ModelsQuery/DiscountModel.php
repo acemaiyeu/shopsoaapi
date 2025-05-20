@@ -2,39 +2,43 @@
 
 namespace App\Models\ModelsQuery;
 
+use App\Models\Cart;
+use App\Models\Coupon;
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Http\Request;
-use Carbon\Carbon;
-use App\Models\Discount;
-use App\Models\Cart;
 
 class DiscountModel extends Model
-{   
+{
     public $promotionModel;
-    public function __construct(PromotionModel $promotionModel) {
+
+    public function __construct(PromotionModel $promotionModel)
+    {
         $this->promotionModel = $promotionModel;
-        
     }
-    public function getDiscounts($request){
-        $query =  Discount::query();
+
+    public function getDiscounts($request)
+    {
+        $query = Discount::query();
         $query->whereNull('deleted_at')->whereNull('deleted_by');
-        if (!empty($request['id'])){
+        if (!empty($request['id'])) {
             $query->where('id', $request['id']);
         }
-        $query->where('active', 1)->where('show',1);
-        $limit = $req['limit']??30;
+        $query->where('active', 1)->where('show', 1);
+        $limit = $req['limit'] ?? 30;
         $query->with('conditions');
-        if ($limit == 1){
+        if ($limit == 1) {
             return $query->first();
         }
-       
-        if ($limit > 1){
+
+        if ($limit > 1) {
             return $query->paginate($limit);
-        }   
+        }
     }
+
     // public function updateProfile($req){
-    //     try {   
+    //     try {
     //         $user = auth()->user();
     //         if ($user){
     //             $user->fullname = $req->fullname??$user->fullname;
@@ -52,27 +56,27 @@ class DiscountModel extends Model
     //         return  ["status" => 500, "message" => $e];
     //     }
     // }
-    public function addDiscountCart($req){
-        if (!empty($req['session_id'])){
+    public function addDiscountCart($req)
+    {
+        if (!empty($req['session_id'])) {
             $cart = Cart::whereNull('deleted_at')->whereNull('deleted_by')->where('session', $req['session_id'])->first();
-            
-            $discount = Discount::whereNull('deleted_at')->whereNull('deleted_by')->where('code', $req['discount_code'])->where('active', 1)->where('start_date', '<=', Carbon::now('Asia/Ho_Chi_Minh'))->where('end_date', '>=', Carbon::now('Asia/Ho_Chi_Minh'))->first();
-           
-            if ($cart && $discount){
+
+            $discount = Coupon::whereNull('deleted_at')->whereNull('deleted_by')->where('code', $req['discount_code'])->where('active', 1)->where('start_date', '<=', Carbon::now('Asia/Ho_Chi_Minh'))->where('end_date', '>=', Carbon::now('Asia/Ho_Chi_Minh'))->first();
+
+            if ($cart && $discount) {
                 $apply = $this->promotionModel->checkConditionDiscount($cart, $discount);
-                if ($apply){
+                if ($apply) {
                     $cart->discount_code = $req['discount_code'];
                     $cart->discount_price = $req['discount_price'];
                     $cart->save();
                     return $cart;
                 }
-                
+
                 return $apply;
             }
             return null;
-        }else{
+        } else {
             return null;
         }
     }
-   
 }

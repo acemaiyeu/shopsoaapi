@@ -4,7 +4,7 @@ namespace App\Models\ModelsQuery;
 
 use App\Models\ModelsQuery\CartModel;
 use App\Models\CartDetail;
-use App\Models\Discount;
+use App\Models\Coupon;
 use App\Models\Product;
 use App\Models\Promotion;
 use Carbon\Carbon;
@@ -62,25 +62,63 @@ class PromotionModel extends Model
 
         // start Promotion Discount
         if ($cart->discount_code) {
-            $discount = Discount::whereNull('deleted_at')->where('code', $cart->discount_code)->with('conditions')->where('start_date', '<=', Carbon::now('Asia/Ho_Chi_Minh'))->where('end_date', '>=', Carbon::now('Asia/Ho_Chi_Minh'))->first();
+            $discount = Coupon::whereNull('deleted_at')->where('code', $cart->discount_code)->with('conditions')->where('start_date', '<=', Carbon::now('Asia/Ho_Chi_Minh'))->where('end_date', '>=', Carbon::now('Asia/Ho_Chi_Minh'))->first();
+
             $apply = $this->checkConditionDiscount($cart, $discount);
             if ($apply) {
                 $discount_total = 0;
-                if ($discount->discount_price > 0) {
-                    $discount_total = $discount->discount_price;
+                if ($discount->data->discount_for == 'cart') {
+                    if ($discount->data->discount_type == 'percent') {
+                        $discount_total = $info_payment[0]['total_price'] * round(($discount->data->value / 100), 1);
+                        if ($discount_total > $discount->data->limit) {
+                            $discount_total = $discount->data->limit;
+                        }
+                    }
+                    if ($discount->data->discount_type == 'price') {
+                        $discount_total = $discount->data->value;
+                    }
                 }
+                if ($discount->data->discount_for == 'product') {
+                    if ($discount->data->condition_type == 'all') {
+                        if ($discount->data->discount_type == 'percent') {
+                            $discount_total = $info_payment[0]['total_price'] * round(($discount->data->value / 100), 1);
+                            if ($discount_total > $discount->data->limit) {
+                                $discount_total = $discount->data->limit;
+                            }
+                        }
+                        if ($discount->data->discount_type == 'price') {
+                            $discount_total = $discount->data->value;
+                        }
+                    }
 
-                if ($discount->discount_percent > 0) {
-                    $discount_total = $info_payment[0]['total_price'] * round(($discount->discount_percent / 100), 1);
+                    if ($discount->data->condition_type == 'only_theme') {
+                        foreach ($cart->details as $detail) {
+                            if ($detail->theme->id == $discount->data->theme_id) {
+                                if ($discount->data->discount_type == 'percent') {
+                                    $discount_total = $info_payment[0]['total_price'] * round(($discount->data->value / 100), 1);
+                                    if ($discount_total > $discount->data->limit) {
+                                        $discount_total = $discount->data->limit;
+                                    }
+                                }
+                                if ($discount->data->discount_type == 'price') {
+                                    $discount_total = $discount->data->value;
+                                }
+
+                                break;
+                            }
+                        }
+                    }
                 }
-                $cart->discount_code = $discount->code;
-                // $cart->discount_name = $discount->name;
-                $cart->discount_price = $discount_total;
-                $info_payment[count($info_payment)] = [
-                    'total_price' => $discount_total,
-                    'total_price_text' => '-' . number_format($discount_total, 0, ',', '.') . ' đ',
-                    'name_show' => $discount->name
-                ];
+                if ($discount_total > 0) {
+                    $cart->discount_code = $discount->code;
+                    // $cart->discount_name = $discount->name;
+                    $cart->discount_price = $discount_total;
+                    $info_payment[count($info_payment)] = [
+                        'total_price' => $discount_total,
+                        'total_price_text' => '-' . number_format($discount_total, 0, ',', '.') . ' đ',
+                        'name_show' => $discount->name
+                    ];
+                }
             }
         }
 
@@ -155,9 +193,47 @@ class PromotionModel extends Model
                             break;
                         }
                     }
-                    if ($condition->condition_apply == 'theme_id') {
-                        if (in_array($condition->condition_data->value, array_column($cart->details->toArray(), 'theme_id'))) {
-                            $apply = true;
+                    if ($condition->condition_apply == 'theme') {
+                        if ($condition->condition_data->theme_type === 'all') {
+                            if ($condition->condition_data->condition_type == 'number') {
+                                foreach ($cart->details as $detail) {
+                                    if (comparative($detail->quantity, $condition->condition_data->condition, $condition->condition_data->value)) {
+                                        $apply = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            if ($condition->condition_data->condition_type == 'price') {
+                                foreach ($cart->details as $detail) {
+                                    if (comparative($detail->total_price, $condition->condition_data->condition, $condition->condition_data->value)) {
+                                        $apply = true;
+                                        break;
+                                    }
+                                }
+                            }
+                            break;
+                        }
+                        if ($condition->condition_data->theme_type === 'only_theme') {
+                            if ($condition->condition_data->condition_type == 'number') {
+                                foreach ($cart->details as $detail) {
+                                    if ($detail->theme_id == $condition->condition_data->theme_id) {
+                                        if (comparative($detail->quantity, $condition->condition_data->condition, $condition->condition_data->value)) {
+                                            $apply = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
+                            if ($condition->condition_data->condition_type == 'price') {
+                                foreach ($cart->details as $detail) {
+                                    if ($detail->theme_id == $condition->condition_data->theme_id) {
+                                        if (comparative($detail->total_price, $condition->condition_data->condition, $condition->condition_data->value)) {
+                                            $apply = true;
+                                            break;
+                                        }
+                                    }
+                                }
+                            }
                             break;
                         }
                     }
